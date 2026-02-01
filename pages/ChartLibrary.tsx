@@ -151,7 +151,7 @@ const ChartLibraryPage: React.FC = () => {
         const limit = getLimit(timeRange);
 
         // Use the exact API endpoint provided
-        const url = `https://became-memphis-compensation-sublime.trycloudflare.com/market-indicators/sample?limit=${limit}&indicators=${indicatorKeys}`;
+        const url = `https://powerful-followed-range-indicated.trycloudflare.com/market-indicators/sample?limit=${limit}&indicators=${indicatorKeys}`;
 
         const response = await fetch(url, { signal: controller.signal });
         if (!response.ok) throw new Error(`Server Error: ${response.status}`);
