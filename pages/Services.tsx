@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { Check, Shield, PieChart, Database, Cpu, Plus, Minus, Briefcase } from 'lucide-react';
-import { PageProps } from '../types';
 
-const ServicesPage: React.FC<PageProps> = ({ onNavigate }) => {
+const ServicesPage: React.FC = () => {
+  const navigate = useNavigate();
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
   const toggleFaq = (index: number) => setOpenFaqIndex(openFaqIndex === index ? null : index);
 
@@ -23,7 +24,7 @@ const ServicesPage: React.FC<PageProps> = ({ onNavigate }) => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Header onNavigate={onNavigate} activePage="services" />
+      <Header />
       <div className="h-24 bg-black"></div>
 
       <section className="bg-black text-white py-20 border-b border-gray-800">

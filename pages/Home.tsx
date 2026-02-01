@@ -1,10 +1,12 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import Navigation from '../components/Navigation';
 import { ArrowRight, Database } from 'lucide-react';
-import { PageProps } from '../types';
 
-const HomePage: React.FC<PageProps> = ({ onNavigate }) => {
+const HomePage: React.FC = () => {
+  const navigate = useNavigate();
   const performanceMetrics = [
     { label: "Lợi nhuận TB/Năm", value: "35.4%", sub: "CAGR 3 Năm", color: "text-white" },
     { label: "Alpha (Vượt trội)", value: "+21.5%", sub: "So với VN-Index", color: "text-[#fad02c]" },
@@ -34,15 +36,20 @@ const HomePage: React.FC<PageProps> = ({ onNavigate }) => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Header onNavigate={onNavigate} activePage="home" transparent={true} />
+      <Header transparent={true} />
+
+      {/* Navigation Controls */}
+      <div className="fixed bottom-8 right-8 z-50">
+        <Navigation />
+      </div>
 
       {/* HERO SECTION */}
       <section className="relative h-screen min-h-[700px] flex items-center justify-center bg-black overflow-hidden">
         <div className="absolute inset-0 opacity-40">
-          <img 
-            src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80" 
-            alt="Architecture" 
-            className="w-full h-full object-cover grayscale" 
+          <img
+            src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+            alt="Architecture"
+            className="w-full h-full object-cover grayscale"
           />
         </div>
         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent"></div>
@@ -56,10 +63,10 @@ const HomePage: React.FC<PageProps> = ({ onNavigate }) => {
               40 Years Old áp dụng các mô hình định lượng và phân tích vĩ mô chuyên sâu để tìm ra mối quan hệ nhân quả trong nền kinh tế.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <button onClick={() => onNavigate('article')} className="bg-[#fad02c] text-black px-8 py-4 font-semibold tracking-wide hover:bg-white transition-colors">
+              <button onClick={() => navigate('/article')} className="bg-[#fad02c] text-black px-8 py-4 font-semibold tracking-wide hover:bg-white transition-colors">
                 Khám phá "Ourlook" tháng 3
               </button>
-              <button onClick={() => onNavigate('services')} className="border border-white text-white px-8 py-4 font-semibold tracking-wide hover:bg-white hover:text-black transition-colors">
+              <button onClick={() => navigate('/services')} className="border border-white text-white px-8 py-4 font-semibold tracking-wide hover:bg-white hover:text-black transition-colors">
                 Triết lý đầu tư
               </button>
             </div>
@@ -86,7 +93,7 @@ const HomePage: React.FC<PageProps> = ({ onNavigate }) => {
                 ))}
               </div>
             </div>
-            
+
             <div className="bg-[#1a1a1a] p-8 border border-gray-800 relative shadow-2xl">
               <div className="flex justify-between items-center mb-8 border-b border-gray-800 pb-4">
                 <h3 className="uppercase tracking-widest text-xs font-semibold text-gray-400">Cumulative Performance (2023 - Present)</h3>
@@ -98,19 +105,19 @@ const HomePage: React.FC<PageProps> = ({ onNavigate }) => {
               <div className="relative h-64 w-full flex items-end gap-1">
                 <div className="absolute inset-0 grid grid-rows-4"> {[1, 2, 3, 4].map(i => <div key={i} className="border-t border-gray-800 w-full h-full"></div>)} </div>
                 <div className="w-full flex justify-between items-end h-full px-4 relative z-10">
-                  <div className="w-1/3 h-full flex items-end justify-center gap-4"> 
-                    <div className="w-8 bg-[#fad02c] h-[35%] opacity-80"></div> 
-                    <div className="w-8 bg-gray-700 h-[15%]"></div> 
+                  <div className="w-1/3 h-full flex items-end justify-center gap-4">
+                    <div className="w-8 bg-[#fad02c] h-[35%] opacity-80"></div>
+                    <div className="w-8 bg-gray-700 h-[15%]"></div>
                   </div>
-                  <div className="w-1/3 h-full flex items-end justify-center gap-4"> 
-                    <div className="w-8 bg-[#fad02c] h-[85%] opacity-80"></div> 
-                    <div className="w-8 bg-gray-700 h-[45%]"></div> 
+                  <div className="w-1/3 h-full flex items-end justify-center gap-4">
+                    <div className="w-8 bg-[#fad02c] h-[85%] opacity-80"></div>
+                    <div className="w-8 bg-gray-700 h-[45%]"></div>
                   </div>
-                  <div className="w-1/3 h-full flex items-end justify-center gap-4"> 
-                    <div className="w-8 bg-[#fad02c] h-[100%] shadow-[0_0_15px_rgba(250,208,44,0.3)] relative"> 
-                      <span className="absolute -top-8 left-1/2 -translate-x-1/2 text-black bg-[#fad02c] text-xs font-bold px-2 py-0.5">153.9%</span> 
-                    </div> 
-                    <div className="w-8 bg-gray-700 h-[72%]"></div> 
+                  <div className="w-1/3 h-full flex items-end justify-center gap-4">
+                    <div className="w-8 bg-[#fad02c] h-[100%] shadow-[0_0_15px_rgba(250,208,44,0.3)] relative">
+                      <span className="absolute -top-8 left-1/2 -translate-x-1/2 text-black bg-[#fad02c] text-xs font-bold px-2 py-0.5">153.9%</span>
+                    </div>
+                    <div className="w-8 bg-gray-700 h-[72%]"></div>
                   </div>
                 </div>
               </div>
@@ -127,7 +134,7 @@ const HomePage: React.FC<PageProps> = ({ onNavigate }) => {
               <span className="text-[#fad02c] font-bold tracking-widest uppercase text-xs mb-2 block">Wealth Management</span>
               <h2 className="font-serif text-4xl text-black">Các giải pháp Đầu tư</h2>
             </div>
-            <button onClick={() => onNavigate('services')} className="hidden md:flex items-center gap-2 border-b border-black pb-1 hover:text-[#fad02c] hover:border-[#fad02c] transition-colors mt-6 md:mt-0">
+            <button onClick={() => navigate('/services')} className="hidden md:flex items-center gap-2 border-b border-black pb-1 hover:text-[#fad02c] hover:border-[#fad02c] transition-colors mt-6 md:mt-0">
               So sánh chi tiết <ArrowRight size={16} />
             </button>
           </div>
@@ -148,7 +155,7 @@ const HomePage: React.FC<PageProps> = ({ onNavigate }) => {
                   </div>
                 </div>
                 <div className="mt-12 pt-6 border-t border-dashed border-gray-700/30">
-                  <button onClick={() => onNavigate('services')} className={`w-full text-left flex justify-between items-center text-sm font-bold uppercase tracking-wider ${item.active ? 'text-white' : 'text-gray-900 group-hover:text-[#fad02c]'}`}>
+                  <button onClick={() => navigate('/services')} className={`w-full text-left flex justify-between items-center text-sm font-bold uppercase tracking-wider ${item.active ? 'text-white' : 'text-gray-900 group-hover:text-[#fad02c]'}`}>
                     Xem chi tiết <ArrowRight size={16} />
                   </button>
                 </div>
@@ -163,11 +170,11 @@ const HomePage: React.FC<PageProps> = ({ onNavigate }) => {
         <div className="container mx-auto px-6 md:px-8">
           <div className="flex justify-between items-center mb-12">
             <h2 className="font-serif text-4xl text-black">Góc nhìn & Nghiên cứu</h2>
-            <button onClick={() => onNavigate('research')} className="text-sm font-bold uppercase tracking-widest border-b border-gray-300 pb-1 hover:border-black transition-all">View All</button>
+            <button onClick={() => navigate('/research')} className="text-sm font-bold uppercase tracking-widest border-b border-gray-300 pb-1 hover:border-black transition-all">View All</button>
           </div>
           <div className="grid md:grid-cols-3 gap-10">
             {insights.map((post, idx) => (
-              <article key={idx} onClick={() => onNavigate('article')} className="group cursor-pointer flex flex-col">
+              <article key={idx} onClick={() => navigate('/article')} className="group cursor-pointer flex flex-col">
                 <div className="overflow-hidden mb-6 aspect-video bg-gray-100">
                   <img src={post.image} alt={post.title} className="w-full h-full object-cover image-filter transform group-hover:scale-105 transition-transform duration-700" />
                 </div>
@@ -193,7 +200,7 @@ const HomePage: React.FC<PageProps> = ({ onNavigate }) => {
               <p className="text-gray-600 mb-8 font-light text-lg leading-relaxed">
                 Truy cập kho dữ liệu kinh tế vĩ mô và thị trường được cập nhật thực. Chúng tôi cung cấp cái nhìn khách quan nhất về sức khỏe nền kinh tế.
               </p>
-              <button onClick={() => onNavigate('charts')} className="flex items-center gap-3 bg-black text-white px-8 py-4 text-sm font-bold uppercase tracking-widest hover:bg-[#fad02c] hover:text-black transition-colors">
+              <button onClick={() => navigate('/charts')} className="flex items-center gap-3 bg-black text-white px-8 py-4 text-sm font-bold uppercase tracking-widest hover:bg-[#fad02c] hover:text-black transition-colors">
                 <Database size={18} /> Explore Charts
               </button>
             </div>
@@ -211,7 +218,7 @@ const HomePage: React.FC<PageProps> = ({ onNavigate }) => {
                 </div>
                 <div className="h-64 w-full relative">
                   <div className="absolute inset-0 flex flex-col justify-between">
-                    {[1,2,3,4,5].map(i => <div key={i} className="w-full h-px bg-gray-100"></div>)}
+                    {[1, 2, 3, 4, 5].map(i => <div key={i} className="w-full h-px bg-gray-100"></div>)}
                     <div className="w-full h-px bg-gray-900"></div>
                   </div>
                   <div className="absolute bottom-0 left-0 w-full h-full flex items-end justify-between px-2 gap-1">
@@ -230,7 +237,7 @@ const HomePage: React.FC<PageProps> = ({ onNavigate }) => {
           </div>
         </div>
       </section>
-      
+
       <Footer />
     </div>
   );

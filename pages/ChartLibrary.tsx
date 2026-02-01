@@ -1,11 +1,11 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
-import { 
-  TrendingUp, Globe, Activity, BarChart2, DollarSign, Search, 
-  ChevronDown, Menu, X, Info, Loader2 
+import {
+  TrendingUp, Globe, Activity, BarChart2, DollarSign, Search,
+  ChevronDown, Menu, X, Info, Loader2
 } from 'lucide-react';
-import { PageProps } from '../types';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -32,54 +32,54 @@ ChartJS.register(
 
 // --- MAPPING CONFIGURATION MATCHING THE API STRUCTURE ---
 const SHEET_COLUMN_MAPPING = {
-    'Vol': {
-        'columns': { 'Volatility Index': 'volatility_index' }
-    },
-    'Bre': {
-        'columns': { 'Breadth Index': 'breadth_index' }
-    },
-    'Map': {
-        'columns': { 'Market Price': 'market_price' }
-    },
-    'Div': {
-        'columns': { 'Dividend Yield (%)': 'dividend_12m_pct' }
-    },
-    'Eps': {
-        'columns': { 'EPS Vnindex': 'eps_vnindex', 'EPS Non-bank': 'eps_nonbank' }
-    },
-    '%St': {
-        'columns': { '% PE < 10': 'st_pe_under_10_pct', '% PB < 1': 'st_pb_under_1_pct' }
-    },
-    'PB': {
-        'columns': { 'P/B Vnindex': 'pb_vnindex', 'P/B Non-bank': 'pb_nonbank', 'P/B Bank': 'pb_bank' }
-    },
-    'Ret': {
-        'columns': { '40 Years Old': 'ret_40years_old_pct', 'VNI Adjusted': 'ret_vni_adjusted_pct' }
-    },
-    'Tur': {
-        'columns': { 'Turnover Ratio': 'turnover_ratio' }
-    },
-    'Der': {
-        'columns': { 'Derivatives Ratio': 'derivatives_ratio' }
-    },
-    'Ins': {
-        'columns': { 'Insider Transaction 3M': 'insider_transaction_3m_pct' }
-    },
-    'Tra': {
-        'columns': { 'Probability': 'probability' }
-    },
-    'Avg': {
-        'columns': { 'Avg 50D Orders': 'avg_50d_orders' }
-    },
-    'Mat': {
-        'columns': { 'Matching Rate (%)': 'matching_rate_pct' }
-    },
-    'Cor': {
-        'columns': { 'Correlation SPX': 'cor_spx', 'Correlation VN1Y': 'cor_vn1y', 'Correlation USD': 'cor_usd' }
-    },
-    'Hea': {
-        'columns': { 'Health Consumption': 'hea_consumption', 'Health Production': 'hea_production', 'Health Labor': 'hea_labor' }
-    }
+  'Vol': {
+    'columns': { 'Volatility Index': 'volatility_index' }
+  },
+  'Bre': {
+    'columns': { 'Breadth Index': 'breadth_index' }
+  },
+  'Map': {
+    'columns': { 'Market Price': 'market_price' }
+  },
+  'Div': {
+    'columns': { 'Dividend Yield (%)': 'dividend_12m_pct' }
+  },
+  'Eps': {
+    'columns': { 'EPS Vnindex': 'eps_vnindex', 'EPS Non-bank': 'eps_nonbank' }
+  },
+  '%St': {
+    'columns': { '% PE < 10': 'st_pe_under_10_pct', '% PB < 1': 'st_pb_under_1_pct' }
+  },
+  'PB': {
+    'columns': { 'P/B Vnindex': 'pb_vnindex', 'P/B Non-bank': 'pb_nonbank', 'P/B Bank': 'pb_bank' }
+  },
+  'Ret': {
+    'columns': { '40 Years Old': 'ret_40years_old_pct', 'VNI Adjusted': 'ret_vni_adjusted_pct' }
+  },
+  'Tur': {
+    'columns': { 'Turnover Ratio': 'turnover_ratio' }
+  },
+  'Der': {
+    'columns': { 'Derivatives Ratio': 'derivatives_ratio' }
+  },
+  'Ins': {
+    'columns': { 'Insider Transaction 3M': 'insider_transaction_3m_pct' }
+  },
+  'Tra': {
+    'columns': { 'Probability': 'probability' }
+  },
+  'Avg': {
+    'columns': { 'Avg 50D Orders': 'avg_50d_orders' }
+  },
+  'Mat': {
+    'columns': { 'Matching Rate (%)': 'matching_rate_pct' }
+  },
+  'Cor': {
+    'columns': { 'Correlation SPX': 'cor_spx', 'Correlation VN1Y': 'cor_vn1y', 'Correlation USD': 'cor_usd' }
+  },
+  'Hea': {
+    'columns': { 'Health Consumption': 'hea_consumption', 'Health Production': 'hea_production', 'Health Labor': 'hea_labor' }
+  }
 } as const;
 
 const DISPLAY_NAMES: Record<string, string> = {
@@ -108,18 +108,19 @@ const CATEGORY_GROUPS = [
   { title: "Performance", icon: <BarChart2 size={16} />, keys: ['Ret', 'Cor'] },
 ];
 
-const ChartLibraryPage: React.FC<PageProps> = ({ onNavigate }) => {
+const ChartLibraryPage: React.FC = () => {
+  const navigate = useNavigate();
   const [activeKey, setActiveKey] = useState<string>('PB');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState<string[]>(['Valuation', 'Market Health']);
   const [timeRange, setTimeRange] = useState<'3M' | '6M' | '1Y' | '3Y' | 'MAX'>('1Y');
-  
+
   const [chartData, setChartData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const toggleMenu = (menu: string) => {
-    setExpandedMenus(prev => 
+    setExpandedMenus(prev =>
       prev.includes(menu) ? prev.filter(item => item !== menu) : [...prev, menu]
     );
   };
@@ -137,28 +138,28 @@ const ChartLibraryPage: React.FC<PageProps> = ({ onNavigate }) => {
 
   useEffect(() => {
     const controller = new AbortController();
-    
+
     const fetchData = async () => {
       setIsLoading(true);
       setError(null);
-      
+
       try {
         const config = SHEET_COLUMN_MAPPING[activeKey as keyof typeof SHEET_COLUMN_MAPPING];
         if (!config) throw new Error("Invalid chart configuration");
 
         const indicatorKeys = Object.values(config.columns).join(',');
         const limit = getLimit(timeRange);
-        
+
         // Use the exact API endpoint provided
         const url = `https://became-memphis-compensation-sublime.trycloudflare.com/market-indicators/sample?limit=${limit}&indicators=${indicatorKeys}`;
-        
+
         const response = await fetch(url, { signal: controller.signal });
         if (!response.ok) throw new Error(`Server Error: ${response.status}`);
-        
+
         const result = await response.json();
-        
+
         if (result.code !== "000" || !result.data) {
-            throw new Error(result.message || "Invalid API response");
+          throw new Error(result.message || "Invalid API response");
         }
 
         const dataObj = result.data;
@@ -167,33 +168,33 @@ const ChartLibraryPage: React.FC<PageProps> = ({ onNavigate }) => {
         const colors = ['#fad02c', '#000000', '#9ca3af', '#ef4444', '#3b82f6'];
 
         const entries = Object.entries(config.columns);
-        
-        entries.forEach(([displayName, apiKey], index) => {
-           const series = dataObj[apiKey as string];
-           if (series && Array.isArray(series) && series.length > 0) {
-              // API data is descending (newest first), reverse it for Chart.js (oldest first)
-              const sortedSeries = [...series].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-              
-              if (labels.length === 0) {
-                 labels = sortedSeries.map((item: any) => item.date);
-              }
 
-              datasets.push({
-                label: displayName,
-                data: sortedSeries.map((item: any) => item.value),
-                borderColor: colors[index % colors.length],
-                backgroundColor: colors[index % colors.length],
-                borderWidth: 2,
-                pointRadius: sortedSeries.length > 60 ? 0 : 3,
-                pointHoverRadius: 5,
-                tension: 0.2,
-                fill: false
-              });
-           }
+        entries.forEach(([displayName, apiKey], index) => {
+          const series = dataObj[apiKey as string];
+          if (series && Array.isArray(series) && series.length > 0) {
+            // API data is descending (newest first), reverse it for Chart.js (oldest first)
+            const sortedSeries = [...series].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+            if (labels.length === 0) {
+              labels = sortedSeries.map((item: any) => item.date);
+            }
+
+            datasets.push({
+              label: displayName,
+              data: sortedSeries.map((item: any) => item.value),
+              borderColor: colors[index % colors.length],
+              backgroundColor: colors[index % colors.length],
+              borderWidth: 2,
+              pointRadius: sortedSeries.length > 60 ? 0 : 3,
+              pointHoverRadius: 5,
+              tension: 0.2,
+              fill: false
+            });
+          }
         });
 
         if (datasets.length === 0) {
-            throw new Error("No data returned for this indicator range.");
+          throw new Error("No data returned for this indicator range.");
         }
 
         setChartData({ labels, datasets });
@@ -243,32 +244,32 @@ const ChartLibraryPage: React.FC<PageProps> = ({ onNavigate }) => {
         borderColor: 'rgba(250, 208, 44, 0.5)',
         borderWidth: 1,
         callbacks: {
-           label: function(context) {
-             let label = context.dataset.label || '';
-             if (label) {
-               label += ': ';
-             }
-             if (context.parsed.y !== null) {
-               label += context.parsed.y;
-             }
-             return label;
-           }
+          label: function (context) {
+            let label = context.dataset.label || '';
+            if (label) {
+              label += ': ';
+            }
+            if (context.parsed.y !== null) {
+              label += context.parsed.y;
+            }
+            return label;
+          }
         }
       }
     },
     scales: {
       x: {
         grid: { display: false },
-        ticks: { 
-            maxTicksLimit: 8,
-            font: { family: 'Inter', size: 10 },
-            color: '#6b7280'
+        ticks: {
+          maxTicksLimit: 8,
+          font: { family: 'Inter', size: 10 },
+          color: '#6b7280'
         }
       },
       y: {
         grid: { color: '#f3f4f6' },
         beginAtZero: false,
-        ticks: { 
+        ticks: {
           font: { family: 'JetBrains Mono', size: 10 },
           color: '#6b7280',
           padding: 10
@@ -279,10 +280,10 @@ const ChartLibraryPage: React.FC<PageProps> = ({ onNavigate }) => {
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      <Header onNavigate={onNavigate} activePage="charts" />
-      
+      <Header />
+
       <div className="flex flex-1 pt-24 px-4 md:px-6 gap-8 container mx-auto max-w-7xl">
-        
+
         {/* SIDEBAR */}
         <aside className={`fixed inset-y-0 left-0 z-40 w-72 bg-white border-r border-gray-200 transform transition-transform duration-300 lg:translate-x-0 lg:static lg:block lg:h-[calc(100vh-140px)] lg:sticky lg:top-28 lg:border-none ${isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
           <div className="flex flex-col h-full">
@@ -290,9 +291,9 @@ const ChartLibraryPage: React.FC<PageProps> = ({ onNavigate }) => {
               <span className="font-bold text-sm uppercase tracking-wider">Terminal Explorer</span>
               <button onClick={() => setIsSidebarOpen(false)}><X size={20} /></button>
             </div>
-            
+
             <div className="p-2 border-b border-gray-100 hidden lg:block">
-               <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 px-3">Index Selection</span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 px-3">Index Selection</span>
             </div>
 
             <div className="p-4">
@@ -317,9 +318,9 @@ const ChartLibraryPage: React.FC<PageProps> = ({ onNavigate }) => {
                       {group.keys.map((key) => {
                         if (!SHEET_COLUMN_MAPPING[key as keyof typeof SHEET_COLUMN_MAPPING]) return null;
                         return (
-                          <button 
-                            key={key} 
-                            onClick={() => { setActiveKey(key); setIsSidebarOpen(false); }} 
+                          <button
+                            key={key}
+                            onClick={() => { setActiveKey(key); setIsSidebarOpen(false); }}
                             className={`w-full text-left px-3 py-2 text-xs font-medium transition-all ${activeKey === key ? 'bg-black text-[#fad02c]' : 'text-gray-500 hover:text-black hover:bg-gray-50'}`}
                           >
                             <span>{DISPLAY_NAMES[key] || key}</span>
@@ -344,21 +345,21 @@ const ChartLibraryPage: React.FC<PageProps> = ({ onNavigate }) => {
               <ChevronDown size={16} />
             </button>
           </div>
-          
+
           <div className="bg-white border border-gray-200 shadow-sm overflow-hidden mb-8">
             <div className="px-6 py-6 md:px-8 md:py-8 border-b border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                   <span className="w-2 h-2 bg-[#fad02c]"></span>
-                   <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Macro Quantitative Research</span>
+                  <span className="w-2 h-2 bg-[#fad02c]"></span>
+                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Macro Quantitative Research</span>
                 </div>
                 <h1 className="font-serif text-3xl md:text-4xl text-gray-900 leading-tight">{DISPLAY_NAMES[activeKey]}</h1>
               </div>
               <div className="flex flex-wrap items-center gap-3">
                 <div className="flex border border-gray-200 p-1 bg-gray-50">
                   {['3M', '6M', '1Y', '3Y', 'MAX'].map((t) => (
-                    <button 
-                      key={t} 
+                    <button
+                      key={t}
                       onClick={() => setTimeRange(t as any)}
                       className={`text-[10px] font-bold px-4 py-1.5 transition-all ${timeRange === t ? 'bg-white text-black shadow-sm' : 'text-gray-400 hover:text-black'}`}
                     >
@@ -368,7 +369,7 @@ const ChartLibraryPage: React.FC<PageProps> = ({ onNavigate }) => {
                 </div>
               </div>
             </div>
-            
+
             <div className="p-4 md:p-8 relative h-[500px] w-full bg-white">
               {isLoading && (
                 <div className="absolute inset-0 z-20 bg-white/90 flex items-center justify-center">
@@ -378,20 +379,20 @@ const ChartLibraryPage: React.FC<PageProps> = ({ onNavigate }) => {
                   </div>
                 </div>
               )}
-              
+
               {error && (
-                 <div className="absolute inset-0 z-20 bg-white flex items-center justify-center p-8">
-                   <div className="max-w-md text-center">
-                     <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-50 text-red-500 mb-4">
-                        <Info size={24} />
-                     </div>
-                     <h3 className="text-lg font-serif mb-2">Data Transmission Failed</h3>
-                     <p className="text-sm text-gray-500 mb-6">{error}</p>
-                     <button onClick={() => window.location.reload()} className="px-6 py-2 bg-black text-white text-xs font-bold uppercase tracking-widest hover:bg-[#fad02c] hover:text-black transition-colors">
-                        Retry Connection
-                     </button>
-                   </div>
-                 </div>
+                <div className="absolute inset-0 z-20 bg-white flex items-center justify-center p-8">
+                  <div className="max-w-md text-center">
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-50 text-red-500 mb-4">
+                      <Info size={24} />
+                    </div>
+                    <h3 className="text-lg font-serif mb-2">Data Transmission Failed</h3>
+                    <p className="text-sm text-gray-500 mb-6">{error}</p>
+                    <button onClick={() => window.location.reload()} className="px-6 py-2 bg-black text-white text-xs font-bold uppercase tracking-widest hover:bg-[#fad02c] hover:text-black transition-colors">
+                      Retry Connection
+                    </button>
+                  </div>
+                </div>
               )}
 
               {!isLoading && !error && chartData && (
@@ -399,7 +400,7 @@ const ChartLibraryPage: React.FC<PageProps> = ({ onNavigate }) => {
               )}
             </div>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-6">
             <div className="md:col-span-2 bg-white border border-gray-200 p-8 shadow-sm">
               <div className="flex items-center gap-3 mb-4">
@@ -408,16 +409,16 @@ const ChartLibraryPage: React.FC<PageProps> = ({ onNavigate }) => {
               </div>
               <div className="text-gray-600 text-sm leading-relaxed space-y-4 font-light">
                 <p>
-                  Indicator <strong>{DISPLAY_NAMES[activeKey]}</strong> is aggregated by the 40 Years Old Terminal from verified raw market sources. 
+                  Indicator <strong>{DISPLAY_NAMES[activeKey]}</strong> is aggregated by the 40 Years Old Terminal from verified raw market sources.
                   We apply standardized data cleaning and normalization models to ensure time-series consistency across multiple market cycles.
                 </p>
                 <p>
-                  Data is synchronized daily following the End Of Day (EOD) market session. 
+                  Data is synchronized daily following the End Of Day (EOD) market session.
                   Investors are advised to use this terminal output for identifying structural trends rather than short-term noise.
                 </p>
               </div>
             </div>
-            
+
             <div className="bg-gray-900 text-white p-8 shadow-sm">
               <h3 className="font-serif text-xl mb-6 text-[#fad02c]">Terminal Metadata</h3>
               <div className="space-y-4 font-mono text-[10px] uppercase tracking-wider text-gray-400">

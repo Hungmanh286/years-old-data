@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import Navigation from '../components/Navigation';
 import { ArrowRight, Search, Mail, Calendar } from 'lucide-react';
-import { PageProps } from '../types';
 
-const ResearchPage: React.FC<PageProps> = ({ onNavigate }) => {
+const ResearchPage: React.FC = () => {
+  const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const featuredSeries = [
@@ -79,8 +81,14 @@ const ResearchPage: React.FC<PageProps> = ({ onNavigate }) => {
   ];
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header onNavigate={onNavigate} activePage="research" />
+    <div className="min-h-screen bg-white">
+      <Header />
+
+      {/* Navigation Controls */}
+      <div className="fixed bottom-8 right-8 z-50">
+        <Navigation />
+      </div>
+
       <div className="h-24"></div>
 
       {/* FEATURED SLIDER */}
@@ -96,7 +104,7 @@ const ResearchPage: React.FC<PageProps> = ({ onNavigate }) => {
                   <span className="text-[#fad02c] font-bold tracking-widest uppercase text-xs mb-4">{slide.subtitle}</span>
                   <h3 className="font-serif text-3xl md:text-4xl text-black mb-6 leading-tight">{slide.title}</h3>
                   <p className="text-gray-600 text-sm leading-relaxed mb-8 font-light line-clamp-4">{slide.desc}</p>
-                  <button onClick={() => onNavigate('article')} className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest border-b border-black pb-1 w-fit hover:text-[#fad02c] hover:border-[#fad02c] transition-all">
+                  <button onClick={() => navigate('/article')} className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest border-b border-black pb-1 w-fit hover:text-[#fad02c] hover:border-[#fad02c] transition-all">
                     Explore Series <ArrowRight size={14} />
                   </button>
                 </div>
@@ -136,7 +144,7 @@ const ResearchPage: React.FC<PageProps> = ({ onNavigate }) => {
               </div>
               <div className="space-y-12">
                 {articles.map((article) => (
-                  <article key={article.id} onClick={() => onNavigate('article')} className="group cursor-pointer grid md:grid-cols-12 gap-6 items-start">
+                  <article key={article.id} onClick={() => navigate('/article')} className="group cursor-pointer grid md:grid-cols-12 gap-6 items-start">
                     <div className="md:col-span-5 overflow-hidden aspect-[4/3] bg-gray-100 relative">
                       <div className="absolute top-0 left-0 bg-black text-white text-[10px] font-bold px-3 py-1 z-10 uppercase tracking-widest">{article.category}</div>
                       <img src={article.image} alt={article.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />

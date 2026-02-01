@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { ChevronRight, Clock, Download, Facebook, Link as LinkIcon, Printer } from 'lucide-react';
-import { PageProps } from '../types';
 
-const ArticleReaderPage: React.FC<PageProps> = ({ onNavigate }) => {
+const ArticleReaderPage: React.FC = () => {
+  const navigate = useNavigate();
   const [scrollProgress, setScrollProgress] = useState(0);
 
   useEffect(() => {
@@ -34,15 +35,15 @@ const ArticleReaderPage: React.FC<PageProps> = ({ onNavigate }) => {
   return (
     <div className="flex flex-col min-h-screen">
       <div className="fixed top-0 left-0 h-1 bg-[#fad02c] z-[60] transition-all duration-100" style={{ width: `${scrollProgress}%` }}></div>
-      <Header onNavigate={onNavigate} activePage="research" />
+      <Header />
       <div className="h-28"></div>
 
       <section className="pb-12 border-b border-gray-100">
         <div className="container mx-auto px-6 md:px-8 max-w-6xl">
           <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-gray-500 mb-8">
-            <button onClick={() => onNavigate('home')} className="hover:text-black cursor-pointer">Trang chủ</button>
+            <button onClick={() => navigate('/')} className="hover:text-black cursor-pointer">Trang chủ</button>
             <ChevronRight size={12} />
-            <button onClick={() => onNavigate('research')} className="hover:text-black cursor-pointer">Nghiên cứu</button>
+            <button onClick={() => navigate('/research')} className="hover:text-black cursor-pointer">Nghiên cứu</button>
             <ChevronRight size={12} />
             <span className="text-[#fad02c] font-bold">{articleData.category}</span>
           </div>
