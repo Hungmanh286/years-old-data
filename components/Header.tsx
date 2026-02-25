@@ -100,8 +100,8 @@ const Header: React.FC<HeaderProps> = ({ activePage, transparent = false }) => {
           <button
             onClick={() => navigate('/services')}
             className={`px-6 py-2 border transition-all duration-300 font-medium text-sm tracking-wide ${isTransparent
-                ? 'border-white text-white hover:bg-[#fad02c] hover:border-[#fad02c] hover:text-black'
-                : 'border-black text-black hover:bg-black hover:text-[#fad02c]'
+              ? 'border-white text-white hover:bg-[#fad02c] hover:border-[#fad02c] hover:text-black'
+              : 'border-black text-black hover:bg-black hover:text-[#fad02c]'
               }`}
           >
             Partner with Us
