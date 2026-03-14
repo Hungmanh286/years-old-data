@@ -1,14 +1,20 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface NavigationProps {
     className?: string;
+    mode?: 'floating' | 'inline';
 }
 
-const Navigation: React.FC<NavigationProps> = ({ className = '' }) => {
+const FLOATING_BOTTOM_OFFSET = 32;
+const FOOTER_GAP = 16;
+
+const Navigation: React.FC<NavigationProps> = ({ className = '', mode = 'floating' }) => {
     const navigate = useNavigate();
     const location = useLocation();
+    const navRef = useRef<HTMLDivElement | null>(null);
+    const [liftOffset, setLiftOffset] = useState(0);
 
     // Định nghĩa thứ tự các trang
     const pageOrder = ['/', '/research', '/article', '/charts', '/services', '/blog'];
@@ -33,8 +39,63 @@ const Navigation: React.FC<NavigationProps> = ({ className = '' }) => {
         navigate('/');
     };
 
+    useEffect(() => {
+        if (mode !== 'floating') {
+            return;
+        }
+
+        let rafId = 0;
+
+        const updatePosition = () => {
+            const navElement = navRef.current;
+            const footerElement = document.getElementById('site-footer');
+
+            if (!navElement || !footerElement) {
+                setLiftOffset(0);
+                return;
+            }
+
+            const navHeight = navElement.offsetHeight;
+            const viewportHeight = window.innerHeight;
+            const footerTop = footerElement.getBoundingClientRect().top;
+            const fixedTop = viewportHeight - FLOATING_BOTTOM_OFFSET - navHeight;
+            const topBeforeFooter = footerTop - FOOTER_GAP - navHeight;
+            const nextTop = Math.min(fixedTop, topBeforeFooter);
+            const nextLift = Math.min(0, nextTop - fixedTop);
+
+            setLiftOffset(nextLift);
+        };
+
+        const onScrollOrResize = () => {
+            cancelAnimationFrame(rafId);
+            rafId = requestAnimationFrame(updatePosition);
+        };
+
+        updatePosition();
+        window.addEventListener('scroll', onScrollOrResize, { passive: true });
+        window.addEventListener('resize', onScrollOrResize);
+
+        return () => {
+            cancelAnimationFrame(rafId);
+            window.removeEventListener('scroll', onScrollOrResize);
+            window.removeEventListener('resize', onScrollOrResize);
+        };
+    }, [mode]);
+
+    const containerClassName = mode === 'floating'
+        ? `fixed bottom-8 right-8 z-50 ${className}`
+        : `flex items-center gap-4 ${className}`;
+
+    const floatingStyle = mode === 'floating'
+        ? { transform: `translateY(${liftOffset}px)` }
+        : undefined;
+
     return (
-        <div className={`flex items-center gap-4 ${className}`}>
+        <div
+            ref={navRef}
+            className={containerClassName}
+            style={floatingStyle}
+        >
             <button
                 onClick={handleBack}
                 className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"

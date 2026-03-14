@@ -5,7 +5,6 @@ import Image from '@tiptap/extension-image';
 import { Dropcursor } from '@tiptap/extension-dropcursor';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import Navigation from '../components/Navigation';
 
 // API Configuration
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
@@ -52,7 +51,7 @@ export default function BlogEditor() {
     const editor = useEditor({
         extensions: [
             StarterKit,
-            Image.configure({
+            (Image as any).configure({
                 allowBase64: true,
             }),
             Dropcursor,
@@ -64,24 +63,6 @@ export default function BlogEditor() {
             },
         },
     });
-
-    const testConnection = async () => {
-        setError(null);
-        setSuccessMessage(null);
-        console.log('=== Testing API Connection ===');
-        console.log('Testing URL:', `${API_BASE_URL}/posts/`);
-
-        try {
-            const response = await fetch(`${API_BASE_URL}/posts/`, {
-                method: 'OPTIONS',
-            });
-            console.log('OPTIONS response:', response.status);
-            setSuccessMessage(`API connection OK! Status: ${response.status}`);
-        } catch (err) {
-            console.error('Connection test failed:', err);
-            setError(`Connection test failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
-        }
-    };
 
     const createPost = async (status: 'draft' | 'published') => {
         // Validation
@@ -237,30 +218,10 @@ export default function BlogEditor() {
     return (
         <div className="min-h-screen flex flex-col">
             <Header />
-            <Navigation className="px-8 py-4 border-b border-gray-200" />
 
             <main className="flex-1 container mx-auto px-4 py-8">
                 <div className="max-w-4xl mx-auto">
                     <h1 className="text-3xl font-bold mb-6 text-gray-800">Write Blog</h1>
-
-                    {/* API Debug Info */}
-                    <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <strong>API Endpoint:</strong> <code className="bg-blue-100 px-2 py-1 rounded">{API_BASE_URL}/posts/</code>
-                                <div className="mt-1 text-xs text-gray-600">
-                                    Check console (F12) for detailed request/response logs
-                                </div>
-                            </div>
-                            <button
-                                onClick={testConnection}
-                                className="ml-4 px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700"
-                            >
-                                Test Connection
-                            </button>
-                        </div>
-                    </div>
-
                     {/* Error Message */}
                     {error && (
                         <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">

@@ -2,7 +2,7 @@ import React from 'react';
 import { Mail, Phone, MapPin, Facebook } from 'lucide-react';
 
 const Footer = () => (
-  <footer className="bg-black text-white pt-20 pb-10 border-t border-gray-800">
+  <footer id="site-footer" className="bg-black text-white pt-20 pb-10 border-t border-gray-800">
     <div className="container mx-auto px-6 md:px-8">
       <div className="grid md:grid-cols-3 gap-12 border-b border-gray-800 pb-12 mb-10">
         <div className="md:col-span-1">
@@ -15,7 +15,7 @@ const Footer = () => (
           <p className="font-serif text-xl text-white mb-4 italic">"Kiến thức + Dữ liệu = Sự thật"</p>
           <p className="text-gray-500 text-xs uppercase tracking-widest leading-relaxed">Investment Research & Wealth Management</p>
         </div>
-        
+
         <div className="md:col-span-1 md:pl-10">
           <h4 className="text-[#fad02c] font-bold uppercase tracking-widest text-xs mb-6">Khám phá</h4>
           <ul className="space-y-4 text-sm text-gray-400 font-light">
@@ -36,7 +36,7 @@ const Footer = () => (
           </ul>
         </div>
       </div>
-      
+
       <div className="flex flex-col md:flex-row justify-between items-center text-xs text-gray-600 font-mono">
         <p>© 2025 40 Years Old. All rights reserved.</p>
         <div className="flex gap-6 mt-4 md:mt-0">

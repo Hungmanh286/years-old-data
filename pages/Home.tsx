@@ -2,7 +2,6 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import Navigation from '../components/Navigation';
 import { ArrowRight, Database } from 'lucide-react';
 
 const HomePage: React.FC = () => {
@@ -37,11 +36,6 @@ const HomePage: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header transparent={true} />
-
-      {/* Navigation Controls */}
-      <div className="fixed bottom-8 right-8 z-50">
-        <Navigation />
-      </div>
 
       {/* HERO SECTION */}
       <section className="relative h-screen min-h-[700px] flex items-center justify-center bg-black overflow-hidden">

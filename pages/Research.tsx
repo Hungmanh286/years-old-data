@@ -2,14 +2,100 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import Navigation from '../components/Navigation';
 import { ArrowRight, Search, Mail, Calendar } from 'lucide-react';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+
+interface Article {
+  id: number;
+  category: string;
+  description: string;
+  title: string;
+  date: string;
+  heroImage?: string;
+  content?: any;
+  area: string;
+  url?: string;
+}
+
+interface ArchiveGroup {
+  year: number;
+  months: Array<{ label: string; value: number }>;
+}
+
+interface ArchiveItem {
+  year: number;
+  month: number;
+}
+
+const monthLabel = (month: number) => `Tháng ${month}`;
+
+const normalizeArchives = (input: unknown): ArchiveGroup[] => {
+  const monthMapByYear = new Map<number, Set<number>>();
+
+  if (!Array.isArray(input)) {
+    return [];
+  }
+
+  input.forEach((item) => {
+    if (typeof item !== 'object' || item === null) {
+      return;
+    }
+
+    const rawYear = (item as any).year;
+    const year = Number(rawYear);
+    if (!Number.isInteger(year)) {
+      return;
+    }
+
+    if (!monthMapByYear.has(year)) {
+      monthMapByYear.set(year, new Set<number>());
+    }
+
+    const monthsContainer = (item as any).months;
+    if (Array.isArray(monthsContainer)) {
+      monthsContainer.forEach((m) => {
+        const month = Number(m);
+        if (Number.isInteger(month) && month >= 1 && month <= 12) {
+          monthMapByYear.get(year)?.add(month);
+        }
+      });
+      return;
+    }
+
+    const rawMonth = (item as any).month;
+    const month = Number(rawMonth);
+    if (Number.isInteger(month) && month >= 1 && month <= 12) {
+      monthMapByYear.get(year)?.add(month);
+    }
+  });
+
+  return [...monthMapByYear.entries()]
+    .sort((a, b) => b[0] - a[0])
+    .map(([year, monthSet]) => ({
+      year,
+      months: [...monthSet]
+        .sort((a, b) => b - a)
+        .map((month) => ({
+          label: monthLabel(month),
+          value: month,
+        })),
+    }));
+};
 
 const ResearchPage: React.FC = () => {
   const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [articles, setArticles] = useState<any[]>([]);
+  const [articles, setArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedArea, setSelectedArea] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
+  const [selectedYear, setSelectedYear] = useState<number | null>(null);
+  const [areas, setAreas] = useState<string[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [archives, setArchives] = useState<ArchiveGroup[]>([]);
 
   const featuredSeries = [
     {
@@ -38,12 +124,41 @@ const ResearchPage: React.FC = () => {
     }
   ];
 
-  const regions = ["THẾ GIỚI", "MỸ", "TRUNG QUỐC", "EU", "NHẬT BẢN", "VIỆT NAM", "KHÁC"];
-  const seriesList = ["Circulation of money", "Trade war", "Outlook", "Market Update"];
-  const archives = [
-    { year: 2025, months: ["Tháng 5", "Tháng 4", "Tháng 3", "Tháng 2", "Tháng 1"] },
-    { year: 2024, months: ["Tháng 12", "Tháng 11", "Tháng 10"] }
-  ];
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const fetchSidebarData = async () => {
+      try {
+        const [areasResponse, categoriesResponse, archivesResponse] = await Promise.all([
+          fetch(`${API_BASE_URL}/posts/areas`, { signal: controller.signal }),
+          fetch(`${API_BASE_URL}/posts/categories`, { signal: controller.signal }),
+          fetch(`${API_BASE_URL}/posts/archives`, { signal: controller.signal }),
+        ]);
+
+        if (!areasResponse.ok || !categoriesResponse.ok || !archivesResponse.ok) {
+          throw new Error('Failed to fetch sidebar filters');
+        }
+
+        const [areasData, categoriesData, archivesData] = await Promise.all([
+          areasResponse.json(),
+          categoriesResponse.json(),
+          archivesResponse.json(),
+        ]);
+
+        setAreas(Array.isArray(areasData) ? areasData : []);
+        setCategories(Array.isArray(categoriesData) ? categoriesData : []);
+        setArchives(normalizeArchives(archivesData as ArchiveItem[]));
+      } catch (error) {
+        if (error instanceof Error && error.name !== 'AbortError') {
+          console.error('Error fetching sidebar filters:', error);
+        }
+      }
+    };
+
+    fetchSidebarData();
+
+    return () => controller.abort();
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -53,32 +168,68 @@ const ResearchPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const fetchArticles = async () => {
       try {
-        const response = await fetch('http://localhost:8000/posts/');
+        setIsLoading(true);
+        const params = new URLSearchParams();
+
+        if (selectedArea) {
+          params.set('area', selectedArea);
+        }
+
+        if (selectedCategory) {
+          params.set('category', selectedCategory);
+        }
+
+        if (selectedMonth) {
+          params.set('month', String(selectedMonth));
+        }
+
+        if (selectedYear) {
+          params.set('year', String(selectedYear));
+        }
+
+        if (searchQuery.trim()) {
+          params.set('q', searchQuery.trim());
+        }
+
+        const query = params.toString();
+        const url = `${API_BASE_URL}/posts/${query ? `?${query}` : ''}`;
+        const response = await fetch(url, { signal: controller.signal });
+
         if (!response.ok) {
           throw new Error('Failed to fetch articles');
         }
+
         const data = await response.json();
         setArticles(data);
       } catch (error) {
-        console.error('Error fetching articles:', error);
+        if (error instanceof Error && error.name !== 'AbortError') {
+          console.error('Error fetching articles:', error);
+        }
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchArticles();
-  }, []);
+
+    return () => controller.abort();
+  }, [searchQuery, selectedArea, selectedCategory, selectedMonth, selectedYear]);
+
+  const resetFilters = () => {
+    setSearchQuery('');
+    setSelectedArea(null);
+    setSelectedCategory(null);
+    setSelectedMonth(null);
+    setSelectedYear(null);
+  };
 
   return (
     <div className="min-h-screen bg-white">
       <Header />
-
-      {/* Navigation Controls */}
-      <div className="fixed bottom-8 right-8 z-50">
-        <Navigation />
-      </div>
 
       <div className="h-24"></div>
 
@@ -172,7 +323,13 @@ const ResearchPage: React.FC = () => {
               <div className="bg-gray-50 p-6 border border-gray-100">
                 <h3 className="font-serif text-xl mb-4">Tìm kiếm</h3>
                 <div className="relative">
-                  <input type="text" placeholder="Tìm theo tiêu đề, nội dung..." className="w-full bg-white border border-gray-300 py-3 pl-4 pr-10 text-sm focus:outline-none focus:border-black transition-colors" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Tìm theo tiêu đề, nội dung..."
+                    className="w-full bg-white border border-gray-300 py-3 pl-4 pr-10 text-sm focus:outline-none focus:border-black transition-colors"
+                  />
                   <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                 </div>
               </div>
@@ -180,23 +337,38 @@ const ResearchPage: React.FC = () => {
               <div>
                 <h3 className="font-serif text-xl mb-6 border-b border-black pb-2">Khu vực</h3>
                 <div className="flex flex-wrap gap-2">
-                  {regions.map((region, idx) => (
-                    <button key={idx} className="border border-gray-200 px-3 py-2 text-xs font-bold text-gray-500 uppercase tracking-wider hover:border-black hover:text-black transition-colors">
+                  {areas.map((region, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setSelectedArea((prev) => (prev === region ? null : region))}
+                      className={`border px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors ${selectedArea === region
+                        ? 'border-black text-black bg-gray-100'
+                        : 'border-gray-200 text-gray-500 hover:border-black hover:text-black'
+                        }`}
+                    >
                       {region}
                     </button>
                   ))}
+                  {!areas.length && <p className="text-sm text-gray-400">Chưa có dữ liệu khu vực</p>}
                 </div>
               </div>
               {/* Chuỗi bài (Series) */}
               <div>
                 <h3 className="font-serif text-xl mb-6 border-b border-black pb-2">Chuỗi bài (Series)</h3>
                 <ul className="space-y-3">
-                  {seriesList.map((series, idx) => (
-                    <li key={idx} className="flex items-center gap-3 text-sm text-gray-600 hover:text-[#fad02c] cursor-pointer transition-colors group">
-                      <div className="w-1.5 h-1.5 bg-gray-300 rounded-full group-hover:bg-[#fad02c] transition-colors"></div>
+                  {categories.map((series, idx) => (
+                    <li
+                      key={idx}
+                      onClick={() => setSelectedCategory((prev) => (prev === series ? null : series))}
+                      className={`flex items-center gap-3 text-sm cursor-pointer transition-colors group ${selectedCategory === series ? 'text-[#fad02c]' : 'text-gray-600 hover:text-[#fad02c]'
+                        }`}
+                    >
+                      <div className={`w-1.5 h-1.5 rounded-full transition-colors ${selectedCategory === series ? 'bg-[#fad02c]' : 'bg-gray-300 group-hover:bg-[#fad02c]'
+                        }`}></div>
                       {series}
                     </li>
                   ))}
+                  {!categories.length && <li className="text-sm text-gray-400">Chưa có dữ liệu chuỗi bài</li>}
                 </ul>
               </div>
               {/* Lưu trữ (Archives) */}
@@ -208,14 +380,37 @@ const ResearchPage: React.FC = () => {
                       <h4 className="font-bold text-sm mb-3 text-black">{group.year}</h4>
                       <div className="grid grid-cols-2 gap-y-2 text-sm text-gray-500">
                         {group.months.map((month, mIdx) => (
-                          <div key={mIdx} className="hover:text-[#fad02c] cursor-pointer transition-colors">
-                            {month}
+                          <div
+                            key={mIdx}
+                            onClick={() => {
+                              const isActive = selectedYear === group.year && selectedMonth === month.value;
+                              if (isActive) {
+                                setSelectedYear(null);
+                                setSelectedMonth(null);
+                                return;
+                              }
+
+                              setSelectedYear(group.year);
+                              setSelectedMonth(month.value);
+                            }}
+                            className={`cursor-pointer transition-colors ${selectedYear === group.year && selectedMonth === month.value
+                              ? 'text-[#fad02c] font-medium'
+                              : 'hover:text-[#fad02c]'
+                              }`}
+                          >
+                            {month.label}
                           </div>
                         ))}
                       </div>
                     </div>
                   ))}
                 </div>
+                <button
+                  onClick={resetFilters}
+                  className="mt-5 w-full border border-gray-300 py-2 text-sm text-gray-700 hover:border-black hover:text-black transition-colors"
+                >
+                  Xóa bộ lọc
+                </button>
               </div>
               {/* Newsletter */}
               <div className="bg-black text-white p-8 text-center">
