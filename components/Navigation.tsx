@@ -11,7 +11,7 @@ const Navigation: React.FC<NavigationProps> = ({ className = '' }) => {
     const location = useLocation();
 
     // Định nghĩa thứ tự các trang
-    const pageOrder = ['/', '/research', '/article', '/charts', '/services'];
+    const pageOrder = ['/', '/research', '/article', '/charts', '/services', '/blog'];
 
     const currentIndex = pageOrder.indexOf(location.pathname);
     const canGoBack = currentIndex > 0;

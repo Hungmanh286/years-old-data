@@ -7,6 +7,7 @@ import ResearchPage from './pages/Research.tsx';
 import ArticleReaderPage from './pages/ArticleReader.tsx';
 import ChartLibraryPage from './pages/ChartLibrary.tsx';
 import ServicesPage from './pages/Services.tsx';
+import BlogEditorPage from './pages/BlogEditor.tsx';
 
 const App: React.FC = () => {
   return (
@@ -17,9 +18,10 @@ const App: React.FC = () => {
           <Route path="/" element={<HomePage />} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/research" element={<ResearchPage />} />
-          <Route path="/article" element={<ArticleReaderPage />} />
+          <Route path="/article/:id" element={<ArticleReaderPage />} />
           <Route path="/charts" element={<ChartLibraryPage />} />
           <Route path="/services" element={<ServicesPage />} />
+          <Route path="/blog" element={<BlogEditorPage />} />
         </Routes>
       </div>
     </Router>

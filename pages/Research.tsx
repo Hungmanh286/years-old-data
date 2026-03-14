@@ -8,6 +8,8 @@ import { ArrowRight, Search, Mail, Calendar } from 'lucide-react';
 const ResearchPage: React.FC = () => {
   const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [articles, setArticles] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const featuredSeries = [
     {
@@ -50,35 +52,24 @@ const ResearchPage: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
-  const articles = [
-    {
-      id: 1,
-      title: "Cập nhật khu vực sản xuất và việc làm US trong tháng 3",
-      excerpt: "Chỉ số PMI Sản xuất là thước đo quan trọng phản ánh sức khỏe của lĩnh vực sản xuất.",
-      date: "04 May 2025",
-      category: "Mỹ",
-      series: "Outlook",
-      image: "https://images.unsplash.com/photo-1565514020176-dbf2277f2c0e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-    },
-    {
-      id: 2,
-      title: "Sự trỗi dậy của Trật tự Tiền tệ Mới",
-      excerpt: "Phân tích sự dịch chuyển dòng vốn toàn cầu khi các ngân hàng trung ương đa dạng hóa dự trữ.",
-      date: "01 May 2025",
-      category: "Thế giới",
-      series: "Circulation of money",
-      image: "https://images.unsplash.com/photo-1621981386829-9b458a2cddde?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-    },
-    {
-      id: 3,
-      title: "Chiến tranh thương mại: Ai là người chiến thắng?",
-      excerpt: "Tác động của thuế quan mới lên chuỗi cung ứng công nghệ.",
-      date: "28 Apr 2025",
-      category: "Trung Quốc",
-      series: "Trade war",
-      image: "https://images.unsplash.com/photo-1526304640152-d4619684e884?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-    }
-  ];
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/posts/');
+        if (!response.ok) {
+          throw new Error('Failed to fetch articles');
+        }
+        const data = await response.json();
+        setArticles(data);
+      } catch (error) {
+        console.error('Error fetching articles:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchArticles();
+  }, []);
 
   return (
     <div className="min-h-screen bg-white">
@@ -143,28 +134,35 @@ const ResearchPage: React.FC = () => {
                 <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Showing {articles.length} Results</span>
               </div>
               <div className="space-y-12">
-                {articles.map((article) => (
-                  <article key={article.id} onClick={() => navigate('/article')} className="group cursor-pointer grid md:grid-cols-12 gap-6 items-start">
-                    <div className="md:col-span-5 overflow-hidden aspect-[4/3] bg-gray-100 relative">
-                      <div className="absolute top-0 left-0 bg-black text-white text-[10px] font-bold px-3 py-1 z-10 uppercase tracking-widest">{article.category}</div>
-                      <img src={article.image} alt={article.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                    </div>
-                    <div className="md:col-span-7 flex flex-col h-full">
-                      <div className="flex items-center gap-3 mb-3 text-xs text-gray-500 font-medium">
-                        <span className="text-[#fad02c] font-bold uppercase tracking-wider">{article.series}</span>
-                        <span>•</span>
-                        <span className="flex items-center gap-1"><Calendar size={12} /> {article.date}</span>
+                {isLoading ? (
+                  <p>Đang tải bài viết...</p>
+                ) : (
+                  articles.map((article) => (
+                    <article key={article.id} onClick={() => navigate(`/article/${article.id}`)} className="group cursor-pointer grid md:grid-cols-12 gap-6 items-start">
+                      <div className="md:col-span-5 overflow-hidden aspect-[4/3] bg-gray-100 relative">
+                        <div className="absolute top-0 left-0 bg-black text-white text-[10px] font-bold px-3 py-1 z-10 uppercase tracking-widest">{article.category}</div>
+                        {/* Tạm thời bỏ qua hero image, để một div màu xám */}
+                        <div className="w-full h-full bg-gray-200 transition-transform duration-700 group-hover:scale-105 flex items-center justify-center text-gray-400 text-xs">
+                          [No Image]
+                        </div>
                       </div>
-                      <h3 className="font-serif text-2xl font-bold leading-snug mb-3 group-hover:text-[#d4af37] transition-colors">{article.title}</h3>
-                      <p className="text-gray-600 text-sm leading-relaxed line-clamp-3 mb-6 font-light">{article.excerpt}</p>
-                      <div className="mt-auto">
-                        <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest border-b border-black pb-0.5 group-hover:border-[#d4af37] group-hover:text-[#d4af37] transition-all">
-                          Đọc chi tiết <ArrowRight size={12} />
-                        </span>
+                      <div className="md:col-span-7 flex flex-col h-full">
+                        <div className="flex items-center gap-3 mb-3 text-xs text-gray-500 font-medium">
+                          <span className="text-[#fad02c] font-bold uppercase tracking-wider">{article.area || 'General'}</span>
+                          <span>•</span>
+                          <span className="flex items-center gap-1"><Calendar size={12} /> {article.date}</span>
+                        </div>
+                        <h3 className="font-serif text-2xl font-bold leading-snug mb-3 group-hover:text-[#d4af37] transition-colors">{article.title}</h3>
+                        <p className="text-gray-600 text-sm leading-relaxed line-clamp-3 mb-6 font-light">{article.description}</p>
+                        <div className="mt-auto">
+                          <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest border-b border-black pb-0.5 group-hover:border-[#d4af37] group-hover:text-[#d4af37] transition-all">
+                            Đọc chi tiết <ArrowRight size={12} />
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  </article>
-                ))}
+                    </article>
+                  ))
+                )}
               </div>
             </div>
 
