@@ -7,7 +7,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 // API Configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://137.184.220.150:8001';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://hungmanhdev.me';
 
 interface PostCreate {
     title: string;
