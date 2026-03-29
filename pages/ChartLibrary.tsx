@@ -150,7 +150,7 @@ const ChartLibraryPage: React.FC = () => {
         const limit = getLimit(timeRange);
 
         // Use the exact API endpoint provided
-        const url = `http://137.184.220.150:8001/market-indicators?limit=${limit}&indicators=${indicatorKeys}`;
+        const url = `https://hungmanhdev.me/market-indicators?limit=${limit}&indicators=${indicatorKeys}`;
 
         const response = await fetch(url, { signal: controller.signal });
         if (!response.ok) throw new Error(`Server Error: ${response.status}`);
