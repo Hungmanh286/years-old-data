@@ -32,7 +32,6 @@ export default function BlogEditor() {
     const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
     const [heroImageUrl, setHeroImageUrl] = useState('');
     const [area, setArea] = useState('');
-    const [url, setUrl] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -71,10 +70,6 @@ export default function BlogEditor() {
             setError('Please enter an area');
             return;
         }
-        if (!url.trim()) {
-            setError('Please enter a URL slug');
-            return;
-        }
 
         if (!editor) {
             setError('Editor not initialized');
@@ -94,7 +89,6 @@ export default function BlogEditor() {
             // Content phải là string (JSON.stringify của TipTap JSON)
             formData.append('content', JSON.stringify(editor.getJSON()));
             formData.append('area', area.trim());
-            formData.append('url', url.trim());
 
             // Hero image: ưu tiên file upload, nếu không có thì dùng URL
             if (heroImageFile) {
@@ -106,7 +100,7 @@ export default function BlogEditor() {
             const apiUrl = `${API_BASE_URL}/posts/`;
             console.log('=== API Request Details ===');
             console.log('API URL:', apiUrl);
-            console.log('Fields:', { category, description, title, date, area, url, heroImageFile, heroImageUrl });
+            console.log('Fields:', { category, description, title, date, area, heroImageFile, heroImageUrl });
             console.log('========================');
 
             const response = await fetch(apiUrl, {
@@ -165,7 +159,6 @@ export default function BlogEditor() {
                 setHeroImageFile(null);
                 setHeroImageUrl('');
                 setArea('');
-                setUrl('');
                 editor.commands.setContent('<p>Hello World! Start writing your blog...</p>');
             }
         } catch (err) {
@@ -286,31 +279,17 @@ export default function BlogEditor() {
                             />
                         </div>
 
-                        {/* Date and URL Slug */}
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Date <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type="date"
-                                    value={date}
-                                    onChange={(e) => setDate(e.target.value)}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    URL Slug <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    value={url}
-                                    onChange={(e) => setUrl(e.target.value)}
-                                    placeholder="my-blog-post"
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                            </div>
+                        {/* Date */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Date <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="date"
+                                value={date}
+                                onChange={(e) => setDate(e.target.value)}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
                         </div>
 
                         {/* Hero Image - File Upload hoặc URL */}
