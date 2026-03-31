@@ -197,6 +197,15 @@ const ArticleReaderPage: React.FC = () => {
         <div className="container mx-auto px-6 md:px-8 max-w-6xl">
           <div className="grid lg:grid-cols-12 gap-12">
             <main className="lg:col-span-8">
+              {article.heroImage && (
+                <div className="mb-10 aspect-video overflow-hidden bg-gray-100 rounded-lg shadow-sm">
+                  <img 
+                    src={article.heroImage} 
+                    alt={article.title} 
+                    className="w-full h-full object-cover" 
+                  />
+                </div>
+              )}
               <div className="font-body text-gray-800 leading-8 text-lg space-y-8 drop-cap">
                 <EditorContent editor={editor} />
               </div>

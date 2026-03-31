@@ -9,18 +9,6 @@ import Footer from '../components/Footer';
 // API Configuration
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://hungmanhdev.me';
 
-interface PostCreate {
-    title: string;
-    content: any; // TipTap JSON content
-    category: string;
-    description: string;
-    date: string;
-    heroImage: string;
-    area: string;
-    url: string;
-    status?: 'draft' | 'published';
-}
-
 interface PostResponse {
     id: number;
     title: string;
@@ -28,7 +16,7 @@ interface PostResponse {
     category: string;
     description: string;
     date: string;
-    heroImage: string;
+    heroImage?: string;
     area: string;
     url: string;
     status: string;
@@ -41,7 +29,8 @@ export default function BlogEditor() {
     const [category, setCategory] = useState('');
     const [description, setDescription] = useState('');
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-    const [heroImage, setHeroImage] = useState('');
+    const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
+    const [heroImageUrl, setHeroImageUrl] = useState('');
     const [area, setArea] = useState('');
     const [url, setUrl] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -78,10 +67,6 @@ export default function BlogEditor() {
             setError('Please enter a description');
             return;
         }
-        if (!heroImage.trim()) {
-            setError('Please enter a hero image URL');
-            return;
-        }
         if (!area.trim()) {
             setError('Please enter an area');
             return;
@@ -101,30 +86,33 @@ export default function BlogEditor() {
         setSuccessMessage(null);
 
         try {
-            const payload: PostCreate = {
-                title: title.trim(),
-                content: editor.getJSON(), // Get TipTap JSON format
-                category: category.trim(),
-                description: description.trim(),
-                date: date,
-                heroImage: heroImage.trim(),
-                area: area.trim(),
-                url: url.trim(),
-                status: status,
-            };
+            const formData = new FormData();
+            formData.append('category', category.trim());
+            formData.append('description', description.trim());
+            formData.append('title', title.trim());
+            formData.append('date', date);
+            // Content phải là string (JSON.stringify của TipTap JSON)
+            formData.append('content', JSON.stringify(editor.getJSON()));
+            formData.append('area', area.trim());
+            formData.append('url', url.trim());
+
+            // Hero image: ưu tiên file upload, nếu không có thì dùng URL
+            if (heroImageFile) {
+                formData.append('hero_image', heroImageFile);
+            } else if (heroImageUrl.trim()) {
+                formData.append('hero_image_url', heroImageUrl.trim());
+            }
 
             const apiUrl = `${API_BASE_URL}/posts/`;
             console.log('=== API Request Details ===');
             console.log('API URL:', apiUrl);
-            console.log('Payload:', JSON.stringify(payload, null, 2));
+            console.log('Fields:', { category, description, title, date, area, url, heroImageFile, heroImageUrl });
             console.log('========================');
 
             const response = await fetch(apiUrl, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload),
+                // Không set Content-Type - browser tự set multipart/form-data với boundary
+                body: formData,
             });
 
             console.log('Response status:', response.status);
@@ -174,7 +162,8 @@ export default function BlogEditor() {
                 setCategory('');
                 setDescription('');
                 setDate(new Date().toISOString().split('T')[0]);
-                setHeroImage('');
+                setHeroImageFile(null);
+                setHeroImageUrl('');
                 setArea('');
                 setUrl('');
                 editor.commands.setContent('<p>Hello World! Start writing your blog...</p>');
@@ -297,8 +286,8 @@ export default function BlogEditor() {
                             />
                         </div>
 
-                        {/* Date, Hero Image, URL */}
-                        <div className="grid grid-cols-3 gap-4">
+                        {/* Date and URL Slug */}
+                        <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
                                     Date <span className="text-red-500">*</span>
@@ -312,18 +301,6 @@ export default function BlogEditor() {
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Hero Image URL <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    value={heroImage}
-                                    onChange={(e) => setHeroImage(e.target.value)}
-                                    placeholder="https://..."
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
                                     URL Slug <span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -332,6 +309,37 @@ export default function BlogEditor() {
                                     onChange={(e) => setUrl(e.target.value)}
                                     placeholder="my-blog-post"
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Hero Image - File Upload hoặc URL */}
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Hero Image (upload file)
+                                </label>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => setHeroImageFile(e.target.files?.[0] ?? null)}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                />
+                                {heroImageFile && (
+                                    <p className="text-xs text-green-600 mt-1">✓ {heroImageFile.name}</p>
+                                )}
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Hero Image URL <span className="text-gray-400 font-normal">(dùng nếu không upload file)</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    value={heroImageUrl}
+                                    onChange={(e) => setHeroImageUrl(e.target.value)}
+                                    placeholder="https://example.com/image.jpg"
+                                    disabled={!!heroImageFile}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-400"
                                 />
                             </div>
                         </div>

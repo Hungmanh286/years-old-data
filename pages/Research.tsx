@@ -292,10 +292,17 @@ const ResearchPage: React.FC = () => {
                     <article key={article.id} onClick={() => navigate(`/article/${article.id}`)} className="group cursor-pointer grid md:grid-cols-12 gap-6 items-start">
                       <div className="md:col-span-5 overflow-hidden aspect-[4/3] bg-gray-100 relative">
                         <div className="absolute top-0 left-0 bg-black text-white text-[10px] font-bold px-3 py-1 z-10 uppercase tracking-widest">{article.category}</div>
-                        {/* Tạm thời bỏ qua hero image, để một div màu xám */}
-                        <div className="w-full h-full bg-gray-200 transition-transform duration-700 group-hover:scale-105 flex items-center justify-center text-gray-400 text-xs">
-                          [No Image]
-                        </div>
+                        {article.heroImage ? (
+                          <img 
+                            src={article.heroImage} 
+                            alt={article.title} 
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400 text-xs">
+                            [No Image]
+                          </div>
+                        )}
                       </div>
                       <div className="md:col-span-7 flex flex-col h-full">
                         <div className="flex items-center gap-3 mb-3 text-xs text-gray-500 font-medium">

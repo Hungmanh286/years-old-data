@@ -1,37 +1,55 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { ArrowRight, Database } from 'lucide-react';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://hungmanhdev.me';
+
+interface InsightPost {
+  id: number;
+  category: string;
+  title: string;
+  description: string;
+  heroImage?: string;
+  area?: string;
+  date?: string;
+}
+
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
+  const [insights, setInsights] = useState<InsightPost[]>([]);
+  const [insightsLoading, setInsightsLoading] = useState(true);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const fetchInsights = async () => {
+      try {
+        setInsightsLoading(true);
+        const response = await fetch(`${API_BASE_URL}/posts/`, { signal: controller.signal });
+        if (!response.ok) throw new Error('Failed to fetch posts');
+        const data: InsightPost[] = await response.json();
+        // Lấy 3 bài đầu tiên
+        setInsights(data.slice(0, 3));
+      } catch (error) {
+        if (error instanceof Error && error.name !== 'AbortError') {
+          console.error('Error fetching insights:', error);
+        }
+      } finally {
+        setInsightsLoading(false);
+      }
+    };
+    fetchInsights();
+    return () => controller.abort();
+  }, []);
+
   const performanceMetrics = [
     { label: "Lợi nhuận TB/Năm", value: "35.4%", sub: "CAGR 3 Năm", color: "text-white" },
     { label: "Alpha (Vượt trội)", value: "+21.5%", sub: "So với VN-Index", color: "text-[#fad02c]" },
     { label: "Rủi ro (VaR 10%)", value: "-19.1%", sub: "Đã kiểm soát", color: "text-gray-400" },
   ];
 
-  const insights = [
-    {
-      category: "Market Outlook",
-      title: "Trật tự cũ và Kỷ nguyên mới",
-      excerpt: "Thế giới hậu Thế chiến II chứng kiến sự trỗi dậy của Hoa Kỳ. Chúng ta đang đứng trước ngưỡng cửa của sự thay đổi trật tự dòng tiền toàn cầu.",
-      image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-    },
-    {
-      category: "Investment Strategy",
-      title: "Chu kỳ Tín dụng & Lạm phát",
-      excerpt: "Phân tích tác động của lãi suất thực dương lên khả năng trả nợ của khối doanh nghiệp sản xuất và chiến lược phòng thủ.",
-      image: "https://images.unsplash.com/photo-1611974765270-ca12586343bb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-    },
-    {
-      category: "Global Macro",
-      title: "Sự dịch chuyển chuỗi cung ứng",
-      excerpt: "Cơ hội và thách thức cho các thị trường mới nổi khi dòng vốn FDI tái định hình cấu trúc kinh tế khu vực.",
-      image: "https://images.unsplash.com/photo-1518186285589-2f7649de83e0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-    }
-  ];
+
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -167,19 +185,35 @@ const HomePage: React.FC = () => {
             <button onClick={() => navigate('/research')} className="text-sm font-bold uppercase tracking-widest border-b border-gray-300 pb-1 hover:border-black transition-all">View All</button>
           </div>
           <div className="grid md:grid-cols-3 gap-10">
-            {insights.map((post, idx) => (
-              <article key={idx} onClick={() => navigate('/article')} className="group cursor-pointer flex flex-col">
-                <div className="overflow-hidden mb-6 aspect-video bg-gray-100">
-                  <img src={post.image} alt={post.title} className="w-full h-full object-cover image-filter transform group-hover:scale-105 transition-transform duration-700" />
+            {insightsLoading ? (
+              Array.from({ length: 3 }).map((_, idx) => (
+                <div key={idx} className="flex flex-col animate-pulse">
+                  <div className="aspect-video bg-gray-200 mb-6" />
+                  <div className="border-t border-black pt-4 mb-3"><div className="h-3 bg-gray-200 rounded w-1/3" /></div>
+                  <div className="h-6 bg-gray-200 rounded mb-3" />
+                  <div className="h-4 bg-gray-100 rounded mb-2" />
+                  <div className="h-4 bg-gray-100 rounded w-3/4" />
                 </div>
-                <div className="border-t border-black pt-4 mb-3"> <span className="text-xs font-bold text-[#fad02c] uppercase tracking-widest">{post.category}</span> </div>
-                <h3 className="font-serif text-2xl font-medium leading-snug mb-3 group-hover:text-[#d4af37] transition-colors">{post.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed mb-4 line-clamp-3">{post.excerpt}</p>
-                <div className="mt-auto pt-4 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-900">
-                  <span className="group-hover:translate-x-2 transition-transform duration-300">Read Analysis</span> <ArrowRight size={12} />
-                </div>
-              </article>
-            ))}
+              ))
+            ) : (
+              insights.map((post) => (
+                <article key={post.id} onClick={() => navigate(`/article/${post.id}`)} className="group cursor-pointer flex flex-col">
+                  <div className="overflow-hidden mb-6 aspect-video bg-gray-100">
+                    {post.heroImage ? (
+                      <img src={post.heroImage} alt={post.title} className="w-full h-full object-cover image-filter transform group-hover:scale-105 transition-transform duration-700" />
+                    ) : (
+                      <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400 text-xs uppercase tracking-widest">No Image</div>
+                    )}
+                  </div>
+                  <div className="border-t border-black pt-4 mb-3"> <span className="text-xs font-bold text-[#fad02c] uppercase tracking-widest">{post.category}</span> </div>
+                  <h3 className="font-serif text-2xl font-medium leading-snug mb-3 group-hover:text-[#d4af37] transition-colors">{post.title}</h3>
+                  <p className="text-gray-500 text-sm leading-relaxed mb-4 line-clamp-3">{post.description}</p>
+                  <div className="mt-auto pt-4 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-900">
+                    <span className="group-hover:translate-x-2 transition-transform duration-300">Read Analysis</span> <ArrowRight size={12} />
+                  </div>
+                </article>
+              ))
+            )}
           </div>
         </div>
       </section>
