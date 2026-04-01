@@ -7,7 +7,19 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 // API Configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8001';
+
+interface PostCreate {
+    title: string;
+    content: any; // TipTap JSON content
+    category: string;
+    description: string;
+    date: string;
+    heroImage: string;
+    area: string;
+    url: string;
+    status?: 'draft' | 'published';
+}
 
 interface PostResponse {
     id: number;

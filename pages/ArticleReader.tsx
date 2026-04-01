@@ -7,7 +7,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { ChevronRight, Clock, Download, Facebook, Link as LinkIcon, Printer } from 'lucide-react';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8001';
 
 interface Article {
   id: number;
@@ -199,10 +199,10 @@ const ArticleReaderPage: React.FC = () => {
             <main className="lg:col-span-8">
               {article.heroImage && (
                 <div className="mb-10 aspect-video overflow-hidden bg-gray-100 rounded-lg shadow-sm">
-                  <img 
-                    src={article.heroImage} 
-                    alt={article.title} 
-                    className="w-full h-full object-cover" 
+                  <img
+                    src={article.heroImage}
+                    alt={article.title}
+                    className="w-full h-full object-cover"
                   />
                 </div>
               )}
