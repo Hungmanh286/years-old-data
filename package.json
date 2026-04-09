@@ -9,27 +9,35 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@tiptap/extension-dropcursor": "^3.20.1",
-    "@tiptap/extension-image": "^3.20.1",
-    "@tiptap/pm": "^3.20.1",
-    "@tiptap/react": "^3.20.1",
-    "@tiptap/starter-kit": "^3.20.1",
+    "@floating-ui/react": "^0.27.19",
+    "@tiptap/extension-document": "^3.22.3",
+    "@tiptap/extension-dropcursor": "^3.22.3",
+    "@tiptap/extension-heading": "^3.22.3",
+    "@tiptap/extension-image": "^3.22.3",
+    "@tiptap/extension-paragraph": "^3.22.3",
+    "@tiptap/extension-text": "^3.22.3",
+    "@tiptap/pm": "^3.22.3",
+    "@tiptap/react": "^3.22.3",
+    "@tiptap/starter-kit": "^3.22.3",
     "chart.js": "4.4.1",
     "lucide-react": "^0.400.0",
     "react": "18.3.1",
     "react-chartjs-2": "5.2.0",
     "react-dom": "18.3.1",
-    "react-router-dom": "^7.13.0"
+    "react-hotkeys-hook": "^5.2.4",
+    "react-router-dom": "^7.13.0",
+    "sass": "^1.99.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.0.0",
+    "sass-embedded": "^1.99.0",
     "typescript": "~5.8.2",
     "vite": "^6.2.0"
   },
   "overrides": {
-    "@tiptap/core": "^3.20.1"
+    "@tiptap/core": "^3.22.3"
   }
 }

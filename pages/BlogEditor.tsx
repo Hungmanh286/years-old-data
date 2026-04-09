@@ -1,8 +1,11 @@
+import './styles.scss';
+
 import React, { useState } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Image from '@tiptap/extension-image';
-import { Dropcursor } from '@tiptap/extension-dropcursor';
+import { editorExtensions } from '../components/tiptap-ui/editorExtensions';
+import { BlogMetadataForm } from '../components/blog/BlogMetadataForm';
+import { BlogEditorToolbar } from '../components/blog/BlogEditorToolbar';
+import { BlogEditorActions } from '../components/blog/BlogEditorActions';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
@@ -49,17 +52,11 @@ export default function BlogEditor() {
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
     const editor = useEditor({
-        extensions: [
-            StarterKit,
-            (Image as any).configure({
-                allowBase64: true,
-            }),
-            Dropcursor,
-        ],
+        extensions: editorExtensions,
         content: '<p>Hello World! Start writing your blog...</p>',
         editorProps: {
             attributes: {
-                class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[400px] p-4',
+                class: 'mx-auto focus:outline-none min-h-[400px] p-4',
             },
         },
     });
@@ -195,17 +192,19 @@ export default function BlogEditor() {
 
     const addImage = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
+        // Reset input so same file can be re-selected
+        event.target.value = '';
 
         if (!file || !editor) return;
 
         const reader = new FileReader();
-
         reader.onload = () => {
             if (reader.result && editor) {
-                editor.chain().focus().setImage({ src: reader.result as string }).run();
+                (editor.chain().focus() as any)
+                    .setImage({ src: reader.result as string, textAlign: 'left', width: null })
+                    .run();
             }
         };
-
         reader.readAsDataURL(file);
     };
 
@@ -233,108 +232,16 @@ export default function BlogEditor() {
                         </div>
                     )}
 
-                    {/* Form Fields */}
-                    <div className="space-y-4 mb-6">
-                        {/* Title */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Title <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                                type="text"
-                                value={title}
-                                onChange={(e) => setTitle(e.target.value)}
-                                placeholder="Enter your blog title..."
-                                className="w-full px-4 py-3 text-xl font-semibold border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
-                        </div>
-
-                        {/* Category and Area */}
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Category <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    value={category}
-                                    onChange={(e) => setCategory(e.target.value)}
-                                    placeholder="e.g., Technology, Travel, Food"
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Area <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    value={area}
-                                    onChange={(e) => setArea(e.target.value)}
-                                    placeholder="e.g., Blog, News, Tutorial"
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Description */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Description <span className="text-red-500">*</span>
-                            </label>
-                            <textarea
-                                value={description}
-                                onChange={(e) => setDescription(e.target.value)}
-                                placeholder="Brief description of your blog post..."
-                                rows={3}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
-
-                        {/* Date */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Date <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                                type="date"
-                                value={date}
-                                onChange={(e) => setDate(e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
-
-                        {/* Hero Image - File Upload hoặc URL */}
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Hero Image (upload file)
-                                </label>
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) => setHeroImageFile(e.target.files?.[0] ?? null)}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                                />
-                                {heroImageFile && (
-                                    <p className="text-xs text-green-600 mt-1">✓ {heroImageFile.name}</p>
-                                )}
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Hero Image URL <span className="text-gray-400 font-normal">(dùng nếu không upload file)</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    value={heroImageUrl}
-                                    onChange={(e) => setHeroImageUrl(e.target.value)}
-                                    placeholder="https://example.com/image.jpg"
-                                    disabled={!!heroImageFile}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-400"
-                                />
-                            </div>
-                        </div>
-                    </div>
+                    {/* Form Fields - Extracted to Component */}
+                    <BlogMetadataForm
+                        title={title} setTitle={setTitle}
+                        category={category} setCategory={setCategory}
+                        area={area} setArea={setArea}
+                        description={description} setDescription={setDescription}
+                        date={date} setDate={setDate}
+                        heroImageFile={heroImageFile} setHeroImageFile={setHeroImageFile}
+                        heroImageUrl={heroImageUrl} setHeroImageUrl={setHeroImageUrl}
+                    />
 
                     {/* Editor Section */}
                     <div>
@@ -343,73 +250,7 @@ export default function BlogEditor() {
                         </label>
 
                         <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
-                            <div className="border-b border-gray-200 bg-gray-50 p-3 flex gap-2 flex-wrap">
-                                <button
-                                    onClick={() => editor?.chain().focus().toggleBold().run()}
-                                    className={`px-3 py-1 text-sm border rounded hover:bg-gray-100 ${editor?.isActive('bold') ? 'bg-gray-200 font-bold' : 'bg-white'
-                                        }`}
-                                >
-                                    Bold
-                                </button>
-                                <button
-                                    onClick={() => editor?.chain().focus().toggleItalic().run()}
-                                    className={`px-3 py-1 text-sm border rounded hover:bg-gray-100 ${editor?.isActive('italic') ? 'bg-gray-200 italic' : 'bg-white'
-                                        }`}
-                                >
-                                    Italic
-                                </button>
-                                <button
-                                    onClick={() => editor?.chain().focus().toggleStrike().run()}
-                                    className={`px-3 py-1 text-sm border rounded hover:bg-gray-100 ${editor?.isActive('strike') ? 'bg-gray-200 line-through' : 'bg-white'
-                                        }`}
-                                >
-                                    Strike
-                                </button>
-                                <button
-                                    onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
-                                    className={`px-3 py-1 text-sm border rounded hover:bg-gray-100 ${editor?.isActive('heading', { level: 1 }) ? 'bg-gray-200 font-bold' : 'bg-white'
-                                        }`}
-                                >
-                                    H1
-                                </button>
-                                <button
-                                    onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
-                                    className={`px-3 py-1 text-sm border rounded hover:bg-gray-100 ${editor?.isActive('heading', { level: 2 }) ? 'bg-gray-200 font-bold' : 'bg-white'
-                                        }`}
-                                >
-                                    H2
-                                </button>
-                                <button
-                                    onClick={() => editor?.chain().focus().toggleBulletList().run()}
-                                    className={`px-3 py-1 text-sm border rounded hover:bg-gray-100 ${editor?.isActive('bulletList') ? 'bg-gray-200' : 'bg-white'
-                                        }`}
-                                >
-                                    • List
-                                </button>
-                                <button
-                                    onClick={() => editor?.chain().focus().toggleOrderedList().run()}
-                                    className={`px-3 py-1 text-sm border rounded hover:bg-gray-100 ${editor?.isActive('orderedList') ? 'bg-gray-200' : 'bg-white'
-                                        }`}
-                                >
-                                    1. List
-                                </button>
-                                <button
-                                    onClick={() => editor?.chain().focus().toggleCodeBlock().run()}
-                                    className={`px-3 py-1 text-sm border rounded hover:bg-gray-100 font-mono ${editor?.isActive('codeBlock') ? 'bg-gray-200' : 'bg-white'
-                                        }`}
-                                >
-                                    &lt;/&gt; Code
-                                </button>
-                                <label className="px-3 py-1 text-sm border rounded hover:bg-gray-100 bg-white cursor-pointer">
-                                    🖼️ Image
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={addImage}
-                                        className="hidden"
-                                    />
-                                </label>
-                            </div>
+                            <BlogEditorToolbar editor={editor} addImage={addImage} />
 
                             <EditorContent
                                 editor={editor}
@@ -418,22 +259,11 @@ export default function BlogEditor() {
                         </div>
                     </div>
 
-                    <div className="mt-6 flex gap-3 justify-end">
-                        <button
-                            onClick={handleSaveDraft}
-                            disabled={isLoading}
-                            className="px-6 py-2 border border-gray-300 rounded hover:bg-gray-50 text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {isLoading ? 'Saving...' : 'Save Draft'}
-                        </button>
-                        <button
-                            onClick={handlePublish}
-                            disabled={isLoading}
-                            className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {isLoading ? 'Publishing...' : 'Publish'}
-                        </button>
-                    </div>
+                    <BlogEditorActions
+                        isLoading={isLoading}
+                        onSaveDraft={handleSaveDraft}
+                        onPublish={handlePublish}
+                    />
                 </div>
             </main>
 
