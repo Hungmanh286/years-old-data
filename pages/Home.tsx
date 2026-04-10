@@ -1,8 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { ArrowRight, Database } from 'lucide-react';
+import { ArrowRight, Database, Loader2 } from 'lucide-react';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler,
+  ChartOptions
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+);
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://www.hungmanhdev.me';
 
@@ -20,6 +44,11 @@ const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const [insights, setInsights] = useState<InsightPost[]>([]);
   const [insightsLoading, setInsightsLoading] = useState(true);
+
+  // --- Return Performance Chart State ---
+  const [perfChartData, setPerfChartData] = useState<any>(null);
+  const [perfLoading, setPerfLoading] = useState(true);
+  const [perfError, setPerfError] = useState<string | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -42,6 +71,114 @@ const HomePage: React.FC = () => {
     fetchInsights();
     return () => controller.abort();
   }, []);
+
+  // Fetch Return Performance data (Ret key: ret_40years_old_pct, ret_vni_adjusted_pct)
+  useEffect(() => {
+    const controller = new AbortController();
+    const fetchPerf = async () => {
+      setPerfLoading(true);
+      setPerfError(null);
+      try {
+        const url = `https://hungmanhdev.me/market-indicators?limit=1095&indicators=ret_40years_old_pct,ret_vni_adjusted_pct`;
+        const res = await fetch(url, { signal: controller.signal });
+        if (!res.ok) throw new Error(`Server Error: ${res.status}`);
+        const result = await res.json();
+        if (result.code !== '000' || !result.data) throw new Error(result.message || 'Invalid API response');
+
+        const dataObj = result.data;
+        let labels: string[] = [];
+        const datasets: any[] = [];
+
+        const series40 = dataObj['ret_40years_old_pct'];
+        const seriesVni = dataObj['ret_vni_adjusted_pct'];
+
+        if (series40 && Array.isArray(series40) && series40.length > 0) {
+          const sorted = [...series40].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+          labels = sorted.map((d: any) => d.date);
+          datasets.push({
+            label: '40YO Strategy',
+            data: sorted.map((d: any) => d.value),
+            borderColor: '#fad02c',
+            backgroundColor: 'rgba(250,208,44,0.08)',
+            borderWidth: 2,
+            pointRadius: 0,
+            pointHoverRadius: 4,
+            tension: 0.3,
+            fill: true,
+          });
+        }
+
+        if (seriesVni && Array.isArray(seriesVni) && seriesVni.length > 0) {
+          const sorted = [...seriesVni].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+          datasets.push({
+            label: 'VNI Adjusted',
+            data: sorted.map((d: any) => d.value),
+            borderColor: '#6b7280',
+            backgroundColor: 'rgba(107,114,128,0.05)',
+            borderWidth: 1.5,
+            pointRadius: 0,
+            pointHoverRadius: 4,
+            tension: 0.3,
+            fill: false,
+          });
+        }
+
+        if (datasets.length === 0) throw new Error('No data available');
+        setPerfChartData({ labels, datasets });
+      } catch (err: any) {
+        if (err.name !== 'AbortError') {
+          setPerfError(err.message || 'Failed to load performance data');
+        }
+      } finally {
+        if (!controller.signal.aborted) setPerfLoading(false);
+      }
+    };
+    fetchPerf();
+    return () => controller.abort();
+  }, []);
+
+  const perfChartOptions: ChartOptions<'line'> = useMemo(() => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: { duration: 600, easing: 'easeInOutQuart' },
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: 'rgba(0,0,0,0.92)',
+        titleFont: { family: 'serif', size: 12 },
+        bodyFont: { family: 'monospace', size: 11 },
+        padding: 10,
+        cornerRadius: 0,
+        borderColor: 'rgba(250,208,44,0.4)',
+        borderWidth: 1,
+        callbacks: {
+          label: (ctx) => {
+            const val = ctx.parsed.y;
+            return ` ${ctx.dataset.label}: ${val !== null ? val.toFixed(2) + '%' : 'N/A'}`;
+          },
+        },
+      },
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: {
+          maxTicksLimit: 6,
+          font: { size: 9 },
+          color: '#6b7280',
+        },
+      },
+      y: {
+        grid: { color: 'rgba(255,255,255,0.06)' },
+        ticks: {
+          font: { size: 9, family: 'monospace' },
+          color: '#6b7280',
+          callback: (v) => `${v}%`,
+        },
+      },
+    },
+  }), []);
 
   const performanceMetrics = [
     { label: "Lợi nhuận TB/Năm", value: "35.4%", sub: "CAGR 3 Năm", color: "text-white" },
@@ -106,73 +243,47 @@ const HomePage: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-[#1a1a1a] p-8 border border-gray-800 relative shadow-2xl">
-              <div className="flex justify-between items-center mb-8 border-b border-gray-800 pb-4">
-                <h3 className="uppercase tracking-widest text-xs font-semibold text-gray-400">Cumulative Performance (2023 - Present)</h3>
-                <div className="flex gap-2">
-                  <span className="w-3 h-3 bg-[#fad02c]"></span> <span className="text-xs text-gray-400 mr-4">40YO Strategy</span>
-                  <span className="w-3 h-3 bg-gray-600"></span> <span className="text-xs text-gray-400">VNI Adjusted</span>
+            <div className="bg-[#1a1a1a] p-6 border border-gray-800 relative shadow-2xl">
+              {/* Chart Header */}
+              <div className="flex justify-between items-center mb-5 border-b border-gray-800 pb-4">
+                <div>
+                  <h3 className="uppercase tracking-widest text-xs font-semibold text-gray-400">Return Performance</h3>
+                  <p className="text-[10px] text-gray-600 font-mono mt-0.5">3Y Cumulative · EOD Data</p>
                 </div>
-              </div>
-              <div className="relative h-64 w-full flex items-end gap-1">
-                <div className="absolute inset-0 grid grid-rows-4"> {[1, 2, 3, 4].map(i => <div key={i} className="border-t border-gray-800 w-full h-full"></div>)} </div>
-                <div className="w-full flex justify-between items-end h-full px-4 relative z-10">
-                  <div className="w-1/3 h-full flex items-end justify-center gap-4">
-                    <div className="w-8 bg-[#fad02c] h-[35%] opacity-80"></div>
-                    <div className="w-8 bg-gray-700 h-[15%]"></div>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-8 h-[2px] bg-[#fad02c] inline-block"></span>
+                    <span className="text-[10px] text-gray-400 font-mono">40YO</span>
                   </div>
-                  <div className="w-1/3 h-full flex items-end justify-center gap-4">
-                    <div className="w-8 bg-[#fad02c] h-[85%] opacity-80"></div>
-                    <div className="w-8 bg-gray-700 h-[45%]"></div>
-                  </div>
-                  <div className="w-1/3 h-full flex items-end justify-center gap-4">
-                    <div className="w-8 bg-[#fad02c] h-[100%] shadow-[0_0_15px_rgba(250,208,44,0.3)] relative">
-                      <span className="absolute -top-8 left-1/2 -translate-x-1/2 text-black bg-[#fad02c] text-xs font-bold px-2 py-0.5">153.9%</span>
-                    </div>
-                    <div className="w-8 bg-gray-700 h-[72%]"></div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-8 h-[2px] bg-gray-600 inline-block"></span>
+                    <span className="text-[10px] text-gray-400 font-mono">VNI</span>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* INVESTMENT SOLUTIONS */}
-      <section className="py-24 bg-[#f8f9fa]">
-        <div className="container mx-auto px-6 md:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-16">
-            <div className="max-w-2xl">
-              <span className="text-[#fad02c] font-bold tracking-widest uppercase text-xs mb-2 block">Wealth Management</span>
-              <h2 className="font-serif text-4xl text-black">Các giải pháp Đầu tư</h2>
-            </div>
-            <button onClick={() => navigate('/services')} className="hidden md:flex items-center gap-2 border-b border-black pb-1 hover:text-[#fad02c] hover:border-[#fad02c] transition-colors mt-6 md:mt-0">
-              So sánh chi tiết <ArrowRight size={16} />
-            </button>
-          </div>
-          <div className="grid lg:grid-cols-3 gap-0 border border-gray-200 bg-white shadow-sm">
-            {[
-              { title: "Low Risk Strategy", target: "25%", risk: "-20%", desc: "Bảo toàn vốn với mức tăng trưởng ổn định cao hơn thị trường." },
-              { title: "Standard Strategy", target: "30%", risk: "-25%", desc: "Cân bằng tối ưu giữa tăng trưởng tài sản và kiểm soát rủi ro.", active: true },
-              { title: "High Risk Strategy", target: "35%", risk: "-30%", desc: "Tối đa hóa lợi nhuận dài hạn cho nhà đầu tư chấp nhận biến động." }
-            ].map((item, idx) => (
-              <div key={idx} className={`p-10 border-r border-gray-200 relative group transition-all duration-300 ${item.active ? 'bg-black text-white' : 'hover:bg-gray-50'}`}>
-                {item.active && <div className="absolute top-0 left-0 w-full h-1 bg-[#fad02c]"></div>}
-                <h3 className={`font-serif text-2xl mb-4 ${item.active ? 'text-white' : 'text-gray-900'}`}>{item.title}</h3>
-                <p className={`text-sm mb-12 h-16 ${item.active ? 'text-gray-400' : 'text-gray-500'}`}>{item.desc}</p>
-                <div className="space-y-6">
-                  <div>
-                    <span className="text-xs uppercase tracking-widest opacity-60">Target Return</span>
-                    <div className={`text-3xl font-light ${item.active ? 'text-[#fad02c]' : 'text-gray-900'}`}>{item.target}</div>
+              {/* Chart Area */}
+              <div className="relative h-64 w-full">
+                {perfLoading && (
+                  <div className="absolute inset-0 flex items-center justify-center z-10">
+                    <div className="flex flex-col items-center gap-3">
+                      <Loader2 className="animate-spin text-[#fad02c]" size={24} />
+                      <span className="text-[9px] font-mono text-gray-500 uppercase tracking-widest">Loading stream...</span>
+                    </div>
                   </div>
-                </div>
-                <div className="mt-12 pt-6 border-t border-dashed border-gray-700/30">
-                  <button onClick={() => navigate('/services')} className={`w-full text-left flex justify-between items-center text-sm font-bold uppercase tracking-wider ${item.active ? 'text-white' : 'text-gray-900 group-hover:text-[#fad02c]'}`}>
-                    Xem chi tiết <ArrowRight size={16} />
-                  </button>
-                </div>
+                )}
+
+                {perfError && !perfLoading && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <p className="text-xs text-red-400 font-mono">{perfError}</p>
+                  </div>
+                )}
+
+                {!perfLoading && !perfError && perfChartData && (
+                  <Line options={perfChartOptions} data={perfChartData} />
+                )}
               </div>
-            ))}
+            </div>
           </div>
         </div>
       </section>
