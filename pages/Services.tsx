@@ -19,7 +19,7 @@ const ServicesPage: React.FC = () => {
     { q: "Vốn đầu tư tối thiểu để tham gia là bao nhiêu?", a: "Chúng tôi nhận ủy thác quản lý với số vốn khởi điểm từ 2.000.000.000 VNĐ (hai tỷ đồng). Mức vốn này giúp đảm bảo việc phân bổ tỷ trọng danh mục được tối ưu và hiệu quả." },
     { q: "Tôi có thể nộp thêm hoặc rút vốn trong quá trình hợp tác không?", a: "Bạn có thể thực hiện nộp hoặc rút vốn linh hoạt bất cứ lúc nào. Tuy nhiên, các giao dịch này cần thực hiện theo bước giá tròn 1 tỷ đồng để thuận tiện cho việc tái cơ cấu danh mục." },
     { q: "Nếu kết thúc hợp đồng mà đầu tư bị lỗ thì sao?", a: "Nếu NAV tăng trưởng âm khi đáo hạn, bạn có quyền gia hạn Hợp đồng thêm 01 năm. Trong năm gia hạn này, chúng tôi sẽ MIỄN PHÍ QUẢN LÝ (0%) để đồng hành cùng bạn khôi phục tài sản." },
-    { q: "Tài sản của tôi có an toàn không?", a: "Tuyệt đối an toàn. Tài sản (tiền và cổ phiếu) nằm trong tài khoản chứng khoán tại DNSE đứng tên chính chủ của bạn. Chúng tôi chỉ được cấp quyền giao dịch (đặt lệnh), không có quyền rút tiền hay chuyển nhượng tài sản." }
+    { q: "Tài sản của tôi có an toàn không?", a: "Tuyệt đối an toàn. Tài sản (tiền và cổ phiếu) nằm trong tài khoản chứng khoán đứng tên chính chủ của bạn. Chúng tôi chỉ được cấp quyền giao dịch (đặt lệnh), không có quyền rút tiền hay chuyển nhượng tài sản." }
   ];
 
   return (
@@ -65,7 +65,7 @@ const ServicesPage: React.FC = () => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-12">
             <div className="md:w-1/2">
               <h2 className="font-serif text-4xl text-black mb-6">Hiệu quả thực tế</h2>
-              <p className="text-gray-600 text-lg font-light leading-relaxed mb-8">Trong gần 3 năm qua, chúng tôi đã chứng minh rằng phương pháp khoa học mang lại lợi nhuận bền vững vượt trội so với thị trường.</p>
+              <p className="text-gray-600 text-lg font-light leading-relaxed mb-8">Cỗ máy Đầu tư của chúng tôi được thiết kế để tạo ra lợi nhuận vượt trội (Alpha) từ năng lực cốt lõi, không phụ thuộc vào diễn biến tăng hay giảm của thị trường chung.</p>
               <div className="flex gap-12">
                 <div>
                   <div className="text-4xl font-serif text-[#fad02c] mb-1">35.4%</div>
@@ -79,7 +79,7 @@ const ServicesPage: React.FC = () => {
             </div>
             <div className="md:w-1/2 bg-white p-8 shadow-lg border border-gray-200">
               <h3 className="font-serif text-xl mb-4">Chiến lược Alpha là gì?</h3>
-              <p className="text-sm text-gray-500 mb-4 leading-relaxed">Alpha là phần lợi nhuận vượt trội mà chúng tôi tạo ra sau khi loại bỏ các biến động của thị trường chung (Beta). Điều này chứng minh rằng lợi nhuận đến từ năng lực chọn lọc cổ phiếu và quản trị rủi ro, chứ không phải do "thủy triều lên".</p>
+              <p className="text-sm text-gray-500 mb-4 leading-relaxed">"Alpha là phần lợi nhuận vượt trội mà chúng tôi tạo ra sau khi loại bỏ các biến động của thị trường chung (Beta). Điều này chứng minh rằng lợi nhuận đến từ năng lực chọn lọc cổ phiếu và quản trị rủi ro thay vì diễn biến của thị trường.</p>
               <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden flex">
                 <div className="h-full bg-gray-400 w-[40%]"></div>
                 <div className="h-full bg-[#fad02c] w-[30%]"></div>
@@ -144,7 +144,7 @@ const ServicesPage: React.FC = () => {
                   <div className="text-[#fad02c] font-serif text-5xl leading-none">1%</div>
                   <div>
                     <h4 className="font-bold text-lg mb-2">Phí Quản lý (Năm)</h4>
-                    <p className="text-sm text-gray-500 leading-relaxed">Thu trên tổng giá trị tài sản ròng (NAV). Dùng để duy trì hệ thống dữ liệu, vận hành đội ngũ nghiên cứu và cơ sở hạ tầng.</p>
+                    <p className="text-sm text-gray-500 leading-relaxed">Phí được thu định kỳ trên tổng giá trị tài sản ròng (NAV), dùng để chi trả cho hoạt động vận hành, hệ thống dữ liệu và đội ngũ nghiên cứu."</p>
                   </div>
                 </div>
                 <div className="w-full h-px bg-gray-800"></div>
@@ -152,7 +152,7 @@ const ServicesPage: React.FC = () => {
                   <div className="text-[#fad02c] font-serif text-5xl leading-none">20%</div>
                   <div>
                     <h4 className="font-bold text-lg mb-2">Phí Hiệu quả</h4>
-                    <p className="text-sm text-gray-500 leading-relaxed">Chỉ thu trên phần lợi nhuận thực dương (High-water mark). Nếu không có lãi, không thu phí này.</p>
+                    <p className="text-sm text-gray-500 leading-relaxed">Phí chỉ được áp dụng trên phần lợi nhuận tạo ra (High-water mark). Nếu danh mục không có lãi, phí này không phát sinh."</p>
                   </div>
                 </div>
               </div>
@@ -164,21 +164,21 @@ const ServicesPage: React.FC = () => {
                   <div className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center shrink-0 text-[#fad02c] font-bold text-xs">1</div>
                   <div>
                     <h5 className="font-bold text-sm uppercase tracking-wide mb-1">Tài khoản Segregated</h5>
-                    <p className="text-sm text-gray-500">Tài sản nằm tại DNSE, đứng tên chính chủ của bạn. Chúng tôi không giữ tiền.</p>
+                    <p className="text-sm text-gray-500">Tài khoản chứng khoán đứng tên chính chủ của bạn, chúng tôi không nắm giữ hay kiểm soát tài sản của bạn.</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
                   <div className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center shrink-0 text-[#fad02c] font-bold text-xs">2</div>
                   <div>
                     <h5 className="font-bold text-sm uppercase tracking-wide mb-1">Kiểm soát rủi ro cứng</h5>
-                    <p className="text-sm text-gray-500">Max 30% NAV/mã. Max 45% NAV/ngành. Chỉ đầu tư cổ phiếu vốn hóa {'>'} 1.000 tỷ.</p>
+                    <p className="text-sm text-gray-500">Danh mục được đa dạng hóa với giới hạn cứng tối đa 30% NAV cho một mã, 45% NAV cho một ngành</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
                   <div className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center shrink-0 text-[#fad02c] font-bold text-xs">3</div>
                   <div>
                     <h5 className="font-bold text-sm uppercase tracking-wide mb-1">Cam kết đồng hành</h5>
-                    <p className="text-sm text-gray-500">Nếu năm đầu tư lỗ, miễn phí quản lý cho năm gia hạn tiếp theo.</p>
+                    <p className="text-sm text-gray-500">Nếu danh mục tăng trưởng âm khi đáo hạn, hợp đồng được gia hạn thêm 01 năm và miễn phí quản lý trong năm tiếp theo.</p>
                   </div>
                 </div>
               </div>

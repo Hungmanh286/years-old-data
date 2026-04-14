@@ -18,9 +18,9 @@ const Footer = () => (
         <div className="md:col-span-1 md:pl-10">
           <h4 className="text-[#fad02c] font-bold uppercase tracking-widest text-xs mb-6">Khám phá</h4>
           <ul className="space-y-4 text-sm text-gray-400 font-light">
-            <li><a href="#" className="hover:text-white transition-colors">Nghiên cứu Vĩ mô</a></li>
-            <li><a href="#" className="hover:text-white transition-colors">Thư viện Biểu đồ</a></li>
-            <li><a href="#" className="hover:text-white transition-colors">Dịch vụ Quản lý</a></li>
+            <li><a href="#" className="hover:text-white transition-colors">Nghiên cứu</a></li>
+            <li><a href="#" className="hover:text-white transition-colors">Thư viện biểu đồ</a></li>
+            <li><a href="#" className="hover:text-white transition-colors">Dịch vụ</a></li>
             <li><a href="#" className="hover:text-white transition-colors">Báo cáo Mẫu</a></li>
           </ul>
         </div>
