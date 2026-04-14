@@ -13,7 +13,6 @@ const Footer = () => (
             <span className="font-serif tracking-widest uppercase text-sm">Years Old</span>
           </div>
           <p className="font-serif text-xl text-white mb-4 italic">"Kiến thức + Dữ liệu = Sự thật"</p>
-          <p className="text-gray-500 text-xs uppercase tracking-widest leading-relaxed">Investment Research & Wealth Management</p>
         </div>
 
         <div className="md:col-span-1 md:pl-10">
@@ -34,14 +33,6 @@ const Footer = () => (
             <li className="flex items-center gap-3 md:justify-end"><span>facebook.com/40yo.vn</span><Facebook size={16} className="text-[#fad02c]" /></li>
             <li className="flex items-start gap-3 md:justify-end mt-4"><span className="leading-relaxed">Tầng 1, chung cư No11A,<br />phường Phúc Lợi, Hà Nội</span><MapPin size={16} className="text-[#fad02c] mt-1" /></li>
           </ul>
-        </div>
-      </div>
-
-      <div className="flex flex-col md:flex-row justify-between items-center text-xs text-gray-600 font-mono">
-        <p>© 2025 40 Years Old. All rights reserved.</p>
-        <div className="flex gap-6 mt-4 md:mt-0">
-          <a href="#" className="hover:text-white">Privacy Policy</a>
-          <a href="#" className="hover:text-white">Terms of Service</a>
         </div>
       </div>
     </div>

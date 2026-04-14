@@ -31,8 +31,8 @@ const ServicesPage: React.FC = () => {
         <div className="container mx-auto px-6 md:px-8">
           <div className="max-w-4xl mx-auto text-center mb-16">
             <span className="text-[#fad02c] font-bold tracking-[0.2em] uppercase text-xs mb-4 block">Our Philosophy</span>
-            <h1 className="font-serif text-5xl md:text-6xl leading-tight mb-6"> "Cỗ máy Đầu tư" </h1>
-            <p className="text-xl text-gray-400 font-light leading-relaxed">Chúng tôi không đoán định thị trường bằng cảm tính. Chúng tôi xây dựng một hệ thống ra quyết định dựa trên khoa học, nơi mọi hành động đều được kiểm chứng bằng dữ liệu lịch sử.</p>
+            <h1 className="font-serif text-5xl md:text-6xl leading-tight mb-6"> "Kiến thức + Dữ liệu = Sự thật" </h1>
+            <p className="text-xl text-gray-400 font-light leading-relaxed">Trên hành trình đầu tư của mình, chúng tôi nỗ lực xây dựng một hệ thống ra quyết định dựa trên các con số, cái mà chúng tôi gọi là “Cỗ máy đầu tư”. Triết lý của chúng tôi là biến đầu tư thành một bộ môn khoa học, nơi các sự thật đã được kiểm chứng bằng dữ liệu. “Cỗ máy” này được vận hành dựa trên ba trụ cột cốt lõi:</p>
           </div>
           <div className="grid md:grid-cols-3 gap-8 text-center">
             <div className="p-8 border border-gray-800 bg-[#111] hover:border-[#fad02c] transition-colors group">

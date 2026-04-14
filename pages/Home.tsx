@@ -204,9 +204,8 @@ const HomePage: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent"></div>
         <div className="container mx-auto px-6 md:px-8 relative z-10 pt-10">
           <div className="max-w-3xl border-l-2 border-[#fad02c] pl-8 md:pl-12">
-            <p className="text-[#fad02c] font-medium tracking-[0.2em] uppercase mb-4 text-sm animate-fade-in-up">Quantitative & Macro Research</p>
             <h1 className="font-serif text-5xl md:text-7xl font-medium text-white leading-tight mb-8">
-              We turn Data <br />into <span className="italic text-gray-400">Certainty.</span>
+              We turn Data <br />into <span className="italic text-gray-400">Truth.</span>
             </h1>
             <p className="text-gray-300 text-lg md:text-xl leading-relaxed mb-10 max-w-2xl font-light">
               40 Years Old áp dụng các mô hình định lượng và phân tích vĩ mô chuyên sâu để tìm ra mối quan hệ nhân quả trong nền kinh tế.
@@ -228,9 +227,8 @@ const HomePage: React.FC = () => {
         <div className="container mx-auto px-6 md:px-8">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
-              <h2 className="font-serif text-4xl mb-6">Hiệu suất được kiểm chứng</h2>
               <p className="text-gray-400 leading-relaxed mb-8 font-light text-lg">
-                Hệ thống "Cỗ máy đầu tư" của chúng tôi được thiết kế để tạo ra Alpha trong mọi điều kiện thị trường. Chúng tôi tập trung vào quản trị rủi ro đuôi (Tail risk).
+                Trong gần 3 năm qua, chúng tôi đã chứng minh rằng phương pháp đầu tư khoa học mang lại lợi nhuận bền vững vượt trội so với thị trường trong khi vẫn giữ mức rủi ro tương đương.
               </p>
               <div className="flex flex-col md:flex-row justify-between gap-8 mt-12 border-t border-gray-800 pt-8">
                 {performanceMetrics.map((metric, idx) => (
