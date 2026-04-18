@@ -9,6 +9,24 @@ const ServicesPage: React.FC = () => {
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
   const toggleFaq = (index: number) => setOpenFaqIndex(openFaqIndex === index ? null : index);
 
+  const [formData, setFormData] = useState({
+    fullName: '',
+    phone: '',
+    email: ''
+  });
+
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('Form submitted:', formData);
+    alert('Cảm ơn bạn đã quan tâm. Chúng tôi sẽ liên hệ lại sớm nhất!');
+    setFormData({ fullName: '', phone: '', email: '' });
+  };
+
   const packages = [
     { name: "Low Risk", target: "25%", var: "-20%", desc: "Chiến lược phòng thủ, phù hợp với dòng tiền nhàn rỗi dài hạn cần sự an toàn cao hơn thị trường.", features: ["Tỷ trọng cổ phiếu thấp", "Tối ưu cổ tức tiền mặt", "Phòng vệ phái sinh chủ động"] },
     { name: "Standard", target: "30%", var: "-25%", desc: "Chiến lược cân bằng, tối ưu hóa giữa tăng trưởng tài sản và kiểm soát biến động.", recommended: true, features: ["Cân bằng Growth/Value", "Đa dạng hóa ngành", "Tối ưu hóa Alpha"] },
@@ -208,16 +226,61 @@ const ServicesPage: React.FC = () => {
       </section>
 
       <section className="py-24 bg-[#fad02c]">
-        <div className="container mx-auto px-6 md:px-8 text-center">
-          <h2 className="font-serif text-4xl md:text-5xl text-black mb-6">Sẵn sàng để Đầu tư Khoa học?</h2>
-          <p className="text-black/80 text-lg mb-10 max-w-2xl mx-auto font-light">Chúng tôi mong muốn được đồng hành cùng bạn trên con đường đạt được mục tiêu tài chính của mình.</p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <button className="bg-black text-white px-8 py-4 font-bold text-sm uppercase tracking-widest hover:bg-white hover:text-black transition-colors flex items-center justify-center gap-2">
-              <Briefcase size={18} /> Mở Hợp đồng Hợp tác
-            </button>
-            <button className="bg-transparent border border-black text-black px-8 py-4 font-bold text-sm uppercase tracking-widest hover:bg-white hover:border-white transition-colors">
-              Liên hệ hỗ trợ: 0901 080 494
-            </button>
+        <div className="container mx-auto px-6 md:px-8">
+          <div className="max-w-4xl mx-auto bg-black p-8 md:p-12 shadow-2xl">
+            <div className="text-center mb-10">
+              <h2 className="font-serif text-3xl md:text-4xl text-[#fad02c] mb-4">Đăng ký Tư vấn Đầu tư</h2>
+              <p className="text-gray-400 text-sm md:text-base font-light">Để lại thông tin bên dưới, đội ngũ chuyên gia của 40 Years Old sẽ liên hệ trực tiếp để trao đổi về lộ trình tài chính của bạn.</p>
+            </div>
+
+            <form onSubmit={handleFormSubmit} className="grid md:grid-cols-3 gap-6">
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase tracking-widest text-[#fad02c] font-bold">Họ và tên</label>
+                <input
+                  type="text"
+                  name="fullName"
+                  value={formData.fullName}
+                  onChange={handleFormChange}
+                  required
+                  placeholder="Nguyễn Văn A"
+                  className="w-full bg-[#111] border border-gray-800 text-white px-4 py-3 text-sm focus:outline-none focus:border-[#fad02c] transition-colors"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase tracking-widest text-[#fad02c] font-bold">Số điện thoại</label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleFormChange}
+                  required
+                  placeholder="09xx xxx xxx"
+                  className="w-full bg-[#111] border border-gray-800 text-white px-4 py-3 text-sm focus:outline-none focus:border-[#fad02c] transition-colors"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase tracking-widest text-[#fad02c] font-bold">Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleFormChange}
+                  required
+                  placeholder="example@gmail.com"
+                  className="w-full bg-[#111] border border-gray-800 text-white px-4 py-3 text-sm focus:outline-none focus:border-[#fad02c] transition-colors"
+                />
+              </div>
+              <div className="md:col-span-3 mt-4">
+                <button type="submit" className="w-full bg-[#fad02c] text-black py-4 font-bold text-sm uppercase tracking-widest hover:bg-white transition-colors flex items-center justify-center gap-3">
+                  <Briefcase size={18} /> Gửi yêu cầu tư vấn
+                </button>
+              </div>
+            </form>
+
+            <div className="mt-8 pt-8 border-t border-gray-800 text-center">
+              <p className="text-gray-500 text-xs uppercase tracking-[0.2em]">Hotline hỗ trợ trực tiếp</p>
+              <p className="text-white font-serif text-xl mt-1">0901 080 494</p>
+            </div>
           </div>
         </div>
       </section>
