@@ -168,7 +168,7 @@ const HomePage: React.FC = () => {
           labels = sorted.map((d: any) => d.date);
           const lastVal = sorted[sorted.length - 1].value;
           setCurrentPbValue(lastVal);
-          
+
           datasets.push({
             label: 'VN-Index P/B',
             data: sorted.map((d: any) => d.value),
@@ -216,7 +216,7 @@ const HomePage: React.FC = () => {
     maintainAspectRatio: false,
     interaction: { mode: 'index', intersect: false },
     plugins: {
-      legend: { 
+      legend: {
         display: true,
         position: 'top' as const,
         labels: { boxWidth: 12, font: { size: 10, family: 'sans-serif' } }
@@ -466,7 +466,7 @@ const HomePage: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="h-80 w-full relative">
                   {pbLoading && (
                     <div className="absolute inset-0 flex items-center justify-center z-10">
@@ -484,7 +484,7 @@ const HomePage: React.FC = () => {
                     <Line options={pbChartOptions} data={pbChartData} />
                   )}
                 </div>
-                
+
                 <div className="mt-6 pt-6 border-t border-gray-50 flex justify-between items-center text-[10px] text-gray-400 font-mono uppercase tracking-wider">
                   <span>Source: Bloomberg, HOSE, 40YO Analysis</span>
                   <span>Updated: {new Date().toLocaleDateString('vi-VN')}</span>
