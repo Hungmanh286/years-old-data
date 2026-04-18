@@ -210,9 +210,6 @@ const ArticleReaderPage: React.FC = () => {
               )}
 
               <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500 border-t border-b border-gray-100 py-4">
-                <div className="flex items-center gap-2">
-                  <span className="font-bold text-black uppercase tracking-wider">{article.author || "40 Years Old Research Team"}</span>
-                </div>
                 <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
                 <time dateTime={article.date}>{article.date}</time>
                 <div className="w-1 h-1 bg-gray-300 rounded-full"></div>

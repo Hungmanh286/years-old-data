@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { Check, Shield, PieChart, Database, Cpu, Plus, Minus, Briefcase } from 'lucide-react';
 
 const ServicesPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
   const toggleFaq = (index: number) => setOpenFaqIndex(openFaqIndex === index ? null : index);
 
@@ -14,18 +15,54 @@ const ServicesPage: React.FC = () => {
     phone: '',
     email: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    alert('Cảm ơn bạn đã quan tâm. Chúng tôi sẽ liên hệ lại sớm nhất!');
-    setFormData({ fullName: '', phone: '', email: '' });
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch('https://www.hungmanhdev.me/users', {
+        method: 'POST',
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: `${formData.fullName} - ${formData.phone}`,
+          email: formData.email,
+          receive_advice: true
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Đăng ký thất bại, vui lòng thử lại sau.');
+      }
+
+      alert('Cảm ơn bạn đã quan tâm. Chúng tôi sẽ liên hệ lại sớm nhất!');
+      setFormData({ fullName: '', phone: '', email: '' });
+    } catch (error: any) {
+      alert(error.message || 'Đã có lỗi xảy ra. Vui lòng thử lại.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  useEffect(() => {
+    if (location.state && (location.state as any).scrollTo === 'contact-form') {
+      const element = document.getElementById('contact-form');
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+    }
+  }, [location]);
 
   const packages = [
     { name: "Low Risk", target: "25%", var: "-20%", desc: "Chiến lược phòng thủ, phù hợp với dòng tiền nhàn rỗi dài hạn cần sự an toàn cao hơn thị trường.", features: ["Tỷ trọng cổ phiếu thấp", "Tối ưu cổ tức tiền mặt", "Phòng vệ phái sinh chủ động"] },
@@ -225,7 +262,7 @@ const ServicesPage: React.FC = () => {
         </div>
       </section>
 
-      <section className="py-24 bg-[#fad02c]">
+      <section id="contact-form" className="py-24 bg-[#fad02c]">
         <div className="container mx-auto px-6 md:px-8">
           <div className="max-w-4xl mx-auto bg-black p-8 md:p-12 shadow-2xl">
             <div className="text-center mb-10">
@@ -271,8 +308,12 @@ const ServicesPage: React.FC = () => {
                 />
               </div>
               <div className="md:col-span-3 mt-4">
-                <button type="submit" className="w-full bg-[#fad02c] text-black py-4 font-bold text-sm uppercase tracking-widest hover:bg-white transition-colors flex items-center justify-center gap-3">
-                  <Briefcase size={18} /> Gửi yêu cầu tư vấn
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className={`w-full bg-[#fad02c] text-black py-4 font-bold text-sm uppercase tracking-widest transition-colors flex items-center justify-center gap-3 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : 'hover:bg-white'}`}
+                >
+                  <Briefcase size={18} /> {isSubmitting ? 'Đang gửi...' : 'Gửi yêu cầu tư vấn'}
                 </button>
               </div>
             </form>

@@ -88,6 +88,9 @@ const ResearchPage: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [articles, setArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [isNewsletterSubmitting, setIsNewsletterSubmitting] = useState(false);
+  const [newsletterMessage, setNewsletterMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedArea, setSelectedArea] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -225,6 +228,56 @@ const ResearchPage: React.FC = () => {
     setSelectedCategory(null);
     setSelectedMonth(null);
     setSelectedYear(null);
+  };
+
+  const handleNewsletterSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const trimmedEmail = newsletterEmail.trim();
+    if (!trimmedEmail) {
+      setNewsletterMessage({
+        type: 'error',
+        text: 'Vui lòng nhập email hợp lệ.',
+      });
+      return;
+    }
+
+    setIsNewsletterSubmitting(true);
+    setNewsletterMessage(null);
+
+    try {
+      const usernameFromEmail = trimmedEmail.split('@')[0] || trimmedEmail;
+      const response = await fetch(`${API_BASE_URL}/users`, {
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: usernameFromEmail,
+          email: trimmedEmail,
+          receive_notifications: true,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to subscribe newsletter');
+      }
+
+      setNewsletterMessage({
+        type: 'success',
+        text: 'Đăng ký thành công. Cảm ơn bạn đã theo dõi newsletter!',
+      });
+      setNewsletterEmail('');
+    } catch (error) {
+      console.error('Error subscribing newsletter:', error);
+      setNewsletterMessage({
+        type: 'error',
+        text: 'Không thể đăng ký lúc này. Vui lòng thử lại sau.',
+      });
+    } finally {
+      setIsNewsletterSubmitting(false);
+    }
   };
 
   return (
@@ -424,8 +477,28 @@ const ResearchPage: React.FC = () => {
                 <Mail className="mx-auto text-[#fad02c] mb-4" size={32} />
                 <h3 className="font-serif text-2xl mb-2 text-[#fad02c]">Newsletter</h3>
                 <p className="text-gray-400 text-xs mb-6 leading-relaxed">Nhận các phân tích thị trường mới nhất và các báo cáo độc quyền trực tiếp vào hộp thư của bạn.</p>
-                <input type="email" placeholder="Địa chỉ Email của bạn" className="w-full bg-[#1a1a1a] border border-gray-700 text-white text-sm py-3 px-4 mb-3 focus:outline-none focus:border-[#fad02c]" />
-                <button className="w-full bg-[#fad02c] text-black font-bold text-sm uppercase tracking-widest py-3 hover:bg-white transition-colors">Đăng ký ngay</button>
+                <form onSubmit={handleNewsletterSubmit}>
+                  <input
+                    type="email"
+                    value={newsletterEmail}
+                    onChange={(e) => setNewsletterEmail(e.target.value)}
+                    required
+                    placeholder="Địa chỉ Email của bạn"
+                    className="w-full bg-[#1a1a1a] border border-gray-700 text-white text-sm py-3 px-4 mb-3 focus:outline-none focus:border-[#fad02c]"
+                  />
+                  <button
+                    type="submit"
+                    disabled={isNewsletterSubmitting}
+                    className={`w-full bg-[#fad02c] text-black font-bold text-sm uppercase tracking-widest py-3 transition-colors ${isNewsletterSubmitting ? 'opacity-70 cursor-not-allowed' : 'hover:bg-white'}`}
+                  >
+                    {isNewsletterSubmitting ? 'Đang đăng ký...' : 'Đăng ký ngay'}
+                  </button>
+                </form>
+                {newsletterMessage && (
+                  <p className={`mt-3 text-xs ${newsletterMessage.type === 'success' ? 'text-green-400' : 'text-red-400'}`}>
+                    {newsletterMessage.text}
+                  </p>
+                )}
               </div>
             </div>
           </div>
