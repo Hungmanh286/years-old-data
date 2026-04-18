@@ -401,7 +401,7 @@ const ChartLibraryPage: React.FC = () => {
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
-            <div className="md:col-span-2 bg-white border border-gray-200 p-8 shadow-sm">
+            <div className="md:col-span-3 bg-white border border-gray-200 p-8 shadow-sm">
               <div className="flex items-center gap-3 mb-4">
                 <Info className="text-[#fad02c]" size={20} />
                 <h3 className="font-serif text-xl font-bold">Research Methodology</h3>
@@ -416,29 +416,6 @@ const ChartLibraryPage: React.FC = () => {
                   Investors are advised to use this terminal output for identifying structural trends rather than short-term noise.
                 </p>
               </div>
-            </div>
-
-            <div className="bg-gray-900 text-white p-8 shadow-sm">
-              <h3 className="font-serif text-xl mb-6 text-[#fad02c]">Terminal Metadata</h3>
-              <div className="space-y-4 font-mono text-[10px] uppercase tracking-wider text-gray-400">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Indicator ID</span>
-                  <span className="text-white">{activeKey}</span>
-                </div>
-                <div className="w-full h-px bg-gray-800"></div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Sample Size</span>
-                  <span className="text-white">{chartData?.labels?.length || 0} EOD Records</span>
-                </div>
-                <div className="w-full h-px bg-gray-800"></div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Update Sync</span>
-                  <span className="text-white">Daily EOD</span>
-                </div>
-              </div>
-              <button className="mt-8 w-full border border-gray-700 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-[#fad02c] hover:text-black transition-colors">
-                Download CSV Dataset
-              </button>
             </div>
           </div>
         </main>

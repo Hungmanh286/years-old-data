@@ -50,6 +50,12 @@ const HomePage: React.FC = () => {
   const [perfLoading, setPerfLoading] = useState(true);
   const [perfError, setPerfError] = useState<string | null>(null);
 
+  // --- P/B Ratio Valuation Chart State ---
+  const [pbChartData, setPbChartData] = useState<any>(null);
+  const [pbLoading, setPbLoading] = useState(true);
+  const [pbError, setPbError] = useState<string | null>(null);
+  const [currentPbValue, setCurrentPbValue] = useState<number | null>(null);
+
   useEffect(() => {
     const controller = new AbortController();
     const fetchInsights = async () => {
@@ -137,6 +143,109 @@ const HomePage: React.FC = () => {
     return () => controller.abort();
   }, []);
 
+  // Fetch P/B Ratio data (Indicators: pb_vnindex, pb_nonbank)
+  useEffect(() => {
+    const controller = new AbortController();
+    const fetchPbData = async () => {
+      setPbLoading(true);
+      setPbError(null);
+      try {
+        const url = `https://hungmanhdev.me/market-indicators?limit=1000&indicators=pb_vnindex,pb_nonbank`;
+        const res = await fetch(url, { signal: controller.signal });
+        if (!res.ok) throw new Error(`Server Error: ${res.status}`);
+        const result = await res.json();
+        if (result.code !== '000' || !result.data) throw new Error(result.message || 'Invalid API response');
+
+        const dataObj = result.data;
+        let labels: string[] = [];
+        const datasets: any[] = [];
+
+        const seriesVni = dataObj['pb_vnindex'];
+        const seriesNonBank = dataObj['pb_nonbank'];
+
+        if (seriesVni && Array.isArray(seriesVni) && seriesVni.length > 0) {
+          const sorted = [...seriesVni].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+          labels = sorted.map((d: any) => d.date);
+          const lastVal = sorted[sorted.length - 1].value;
+          setCurrentPbValue(lastVal);
+          
+          datasets.push({
+            label: 'VN-Index P/B',
+            data: sorted.map((d: any) => d.value),
+            borderColor: '#000000',
+            backgroundColor: 'rgba(0,0,0,0.05)',
+            borderWidth: 2,
+            pointRadius: 0,
+            pointHoverRadius: 4,
+            tension: 0.3,
+            fill: false,
+          });
+        }
+
+        if (seriesNonBank && Array.isArray(seriesNonBank) && seriesNonBank.length > 0) {
+          const sorted = [...seriesNonBank].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+          datasets.push({
+            label: 'Non-Bank P/B',
+            data: sorted.map((d: any) => d.value),
+            borderColor: '#fad02c',
+            backgroundColor: 'rgba(250,208,44,0.05)',
+            borderWidth: 2,
+            pointRadius: 0,
+            pointHoverRadius: 4,
+            tension: 0.3,
+            fill: false,
+          });
+        }
+
+        if (datasets.length === 0) throw new Error('No data available');
+        setPbChartData({ labels, datasets });
+      } catch (err: any) {
+        if (err.name !== 'AbortError') {
+          setPbError(err.message || 'Failed to load P/B data');
+        }
+      } finally {
+        if (!controller.signal.aborted) setPbLoading(false);
+      }
+    };
+    fetchPbData();
+    return () => controller.abort();
+  }, []);
+
+  const pbChartOptions: ChartOptions<'line'> = useMemo(() => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { 
+        display: true,
+        position: 'top' as const,
+        labels: { boxWidth: 12, font: { size: 10, family: 'sans-serif' } }
+      },
+      tooltip: {
+        backgroundColor: 'rgba(255,255,255,0.95)',
+        titleColor: '#000',
+        bodyColor: '#000',
+        borderColor: '#ddd',
+        borderWidth: 1,
+        padding: 10,
+        cornerRadius: 4,
+        callbacks: {
+          label: (ctx) => ` ${ctx.dataset.label}: ${ctx.parsed.y?.toFixed(2)}`
+        }
+      },
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: { maxTicksLimit: 6, font: { size: 9 }, color: '#9ca3af' },
+      },
+      y: {
+        grid: { color: 'rgba(0,0,0,0.03)' },
+        ticks: { font: { size: 9, family: 'monospace' }, color: '#9ca3af' },
+      },
+    },
+  }), []);
+
   const perfChartOptions: ChartOptions<'line'> = useMemo(() => ({
     responsive: true,
     maintainAspectRatio: false,
@@ -181,9 +290,9 @@ const HomePage: React.FC = () => {
   }), []);
 
   const performanceMetrics = [
-    { label: "Lợi nhuận TB/Năm", value: "35.4%", sub: "CAGR 3 Năm", color: "text-white" },
-    { label: "Alpha (Vượt trội)", value: "+21.5%", sub: "So với VN-Index", color: "text-[#fad02c]" },
-    { label: "Rủi ro (VaR 10%)", value: "-19.1%", sub: "Đã kiểm soát", color: "text-gray-400" },
+    { label: "CARG", value: "35.4%", sub: "Lợi nhuân kép bình quân từ 2023", color: "text-white" },
+    { label: "Alpha", value: "+21.5%", sub: "Lợi nhuận vượt trội so với VN-Index", color: "text-[#fad02c]" },
+    { label: "VaR 10%", value: "-19.1%", sub: "Mức lỗ trong kịch bản xấu nhât xảy ra", color: "text-gray-400" },
   ];
 
 
@@ -331,43 +440,54 @@ const HomePage: React.FC = () => {
       <section className="py-24 bg-gray-50 border-t border-gray-200">
         <div className="container mx-auto px-6 md:px-8">
           <div className="grid lg:grid-cols-12 gap-12 items-center">
-            <div className="lg:col-span-5">
+            <div className="lg:col-span-4">
               <span className="text-[#fad02c] font-bold tracking-widest uppercase text-xs mb-3 block">Data Library</span>
-              <h2 className="font-serif text-4xl text-black mb-6">Dữ liệu không nói dối.</h2>
+              <h2 className="font-serif text-4xl text-black mb-6">Định giá thị trường.</h2>
               <p className="text-gray-600 mb-8 font-light text-lg leading-relaxed">
-                Truy cập kho dữ liệu kinh tế vĩ mô và thị trường được cập nhật thực. Chúng tôi cung cấp cái nhìn khách quan nhất về sức khỏe nền kinh tế.
+                Theo dõi diễn biến P/B Ratio của VN-Index và nhóm Phi tài chính để xác định các vùng cơ hội dài hạn dựa trên giá trị tài sản ròng.
               </p>
               <button onClick={() => navigate('/charts')} className="flex items-center gap-3 bg-black text-white px-8 py-4 text-sm font-bold uppercase tracking-widest hover:bg-[#fad02c] hover:text-black transition-colors">
-                <Database size={18} /> Explore Charts
+                <Database size={18} /> View P/B History
               </button>
             </div>
-            <div className="lg:col-span-7">
+            <div className="lg:col-span-8">
               <div className="bg-white p-8 md:p-10 shadow-xl border border-gray-100 relative">
                 <div className="flex justify-between items-start mb-8 pb-4 border-b border-gray-100">
                   <div>
-                    <h3 className="font-serif text-2xl text-gray-900">US Recession Probability</h3>
-                    <p className="text-xs text-gray-400 font-mono mt-1 uppercase">Source: NY Fed / 40 Years Old Data</p>
+                    <h3 className="font-serif text-2xl text-gray-900">P/B Ratio Valuation</h3>
+                    <p className="text-xs text-gray-400 font-mono mt-1 uppercase">Metric: Trailing P/B · Market Wide</p>
                   </div>
                   <div className="text-right">
-                    <div className="text-3xl font-light text-black">46.3%</div>
-                    <div className="text-xs font-bold text-red-500 bg-red-50 px-2 py-1 mt-1 inline-block">ALERT ZONE</div>
+                    <div className="text-3xl font-light text-black">
+                      {pbLoading ? '...' : currentPbValue?.toFixed(2) || 'N/A'}
+                    </div>
+                    <div className={`text-xs font-bold px-2 py-1 mt-1 inline-block ${currentPbValue && currentPbValue < 1.4 ? 'text-green-600 bg-green-50' : 'text-gray-500 bg-gray-50'}`}>
+                      {pbLoading ? 'FETCHING' : (currentPbValue && currentPbValue < 1.4 ? 'VALUE ZONE' : 'MONITORING')}
+                    </div>
                   </div>
                 </div>
-                <div className="h-64 w-full relative">
-                  <div className="absolute inset-0 flex flex-col justify-between">
-                    {[1, 2, 3, 4, 5].map(i => <div key={i} className="w-full h-px bg-gray-100"></div>)}
-                    <div className="w-full h-px bg-gray-900"></div>
-                  </div>
-                  <div className="absolute bottom-0 left-0 w-full h-full flex items-end justify-between px-2 gap-1">
-                    {[10, 15, 20, 45, 30, 60, 80, 50, 40, 35, 25, 46].map((h, i) => (
-                      <div key={i} className="flex-1 bg-gray-200 hover:bg-[#fad02c] transition-colors relative group" style={{ height: `${h}%` }}></div>
-                    ))}
-                    <div className="flex-1 bg-black" style={{ height: '46.3%' }}></div>
-                  </div>
-                  <div className="absolute top-[50%] w-full border-t border-red-500 border-dashed opacity-50"></div>
+                
+                <div className="h-80 w-full relative">
+                  {pbLoading && (
+                    <div className="absolute inset-0 flex items-center justify-center z-10">
+                      <Loader2 className="animate-spin text-[#fad02c]" size={32} />
+                    </div>
+                  )}
+
+                  {pbError && !pbLoading && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <p className="text-sm text-red-500 font-mono">{pbError}</p>
+                    </div>
+                  )}
+
+                  {!pbLoading && !pbError && pbChartData && (
+                    <Line options={pbChartOptions} data={pbChartData} />
+                  )}
                 </div>
-                <div className="flex justify-between mt-4 text-xs font-mono text-gray-400 uppercase">
-                  <span>2015</span> <span>2020</span> <span>2025 (Forecast)</span>
+                
+                <div className="mt-6 pt-6 border-t border-gray-50 flex justify-between items-center text-[10px] text-gray-400 font-mono uppercase tracking-wider">
+                  <span>Source: Bloomberg, HOSE, 40YO Analysis</span>
+                  <span>Updated: {new Date().toLocaleDateString('vi-VN')}</span>
                 </div>
               </div>
             </div>
