@@ -30,12 +30,27 @@ const ProgressBar: React.FC<{ progress: number }> = ({ progress }) => (
   />
 );
 
-const ArticleSidebar: React.FC = () => {
+const ArticleSidebar: React.FC<{ article: Article }> = ({ article }) => {
   const related = [
     { title: "Lạm phát Mỹ: Đỉnh hay chưa?", date: "01 May 2025" },
     { title: "Fed và lộ trình lãi suất cuối năm 2025", date: "28 Apr 2025" },
     { title: "Dòng vốn ETF đảo chiều", date: "20 Apr 2025" }
   ];
+
+  const shareToFacebook = () => {
+    const url = window.location.href;
+    const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+    window.open(shareUrl, '_blank', 'width=600,height=400');
+  };
+
+  const copyToClipboard = () => {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url).then(() => {
+      alert('Đã sao chép liên kết vào bộ nhớ tạm!');
+    }).catch(err => {
+      console.error('Lỗi khi sao chép:', err);
+    });
+  };
 
   return (
     <aside className="sticky top-32 space-y-10">
@@ -51,9 +66,24 @@ const ArticleSidebar: React.FC = () => {
       <div>
         <h3 className="font-serif text-lg mb-4 border-b border-gray-200 pb-2">Chia sẻ</h3>
         <div className="flex gap-4">
-          <button className="w-10 h-10 border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-[#1877F2] hover:text-white hover:border-[#1877F2] transition-colors rounded-full"><Facebook size={18} /></button>
-          <button className="w-10 h-10 border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-black hover:text-white hover:border-black transition-colors rounded-full"><LinkIcon size={18} /></button>
-          <button className="w-10 h-10 border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-black hover:text-white hover:border-black transition-colors rounded-full"><Printer size={18} /></button>
+          <button
+            onClick={shareToFacebook}
+            className="w-10 h-10 border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-[#1877F2] hover:text-white hover:border-[#1877F2] transition-colors rounded-full"
+          >
+            <Facebook size={18} />
+          </button>
+          <button
+            onClick={copyToClipboard}
+            className="w-10 h-10 border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-black hover:text-white hover:border-black transition-colors rounded-full"
+          >
+            <LinkIcon size={18} />
+          </button>
+          <button
+            onClick={() => window.print()}
+            className="w-10 h-10 border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-black hover:text-white hover:border-black transition-colors rounded-full"
+          >
+            <Printer size={18} />
+          </button>
         </div>
       </div>
 
@@ -212,7 +242,7 @@ const ArticleReaderPage: React.FC = () => {
             </main>
 
             <div className="lg:col-span-4">
-              <ArticleSidebar />
+              <ArticleSidebar article={article} />
             </div>
           </div>
         </div>

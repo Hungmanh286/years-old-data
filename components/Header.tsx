@@ -32,12 +32,6 @@ const Header: React.FC<HeaderProps> = ({ activePage, transparent = false }) => {
     { id: 'services', label: 'Services' },
   ];
 
-  const insightCategories = [
-    "Market Outlook",
-    "Investment Strategy",
-    "Global Macro"
-  ];
-
   return (
     <header className={`fixed w-full z-50 transition-all duration-500 ${bgColor} ${borderColor} py-4`}>
       <div className="container mx-auto px-6 md:px-8 flex justify-between items-center">
@@ -55,34 +49,12 @@ const Header: React.FC<HeaderProps> = ({ activePage, transparent = false }) => {
         {/* Desktop Nav */}
         <nav className="hidden lg:flex items-center gap-10 font-medium text-sm tracking-wide">
 
-          {/* Insight Dropdown */}
-          <div className="group relative h-full py-4">
-            <button
-              className={`flex items-center gap-1 hover:text-[#fad02c] transition-colors ${textColor} ${location.pathname === '/research' ? 'text-[#fad02c] font-bold' : ''}`}
-              onClick={() => navigate('/research')}
-            >
-              Insight <ChevronDown size={14} />
-            </button>
-            <div className="absolute top-full left-0 w-56 bg-white shadow-xl border-t-2 border-[#fad02c] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0">
-              <div className="py-2 flex flex-col">
-                {insightCategories.map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={(e) => { e.stopPropagation(); navigate('/research'); }}
-                    className="text-left px-6 py-3 text-sm text-gray-600 hover:bg-gray-50 hover:text-[#fad02c] transition-colors border-b border-gray-50 last:border-0"
-                  >
-                    {cat}
-                  </button>
-                ))}
-                <button
-                  onClick={(e) => { e.stopPropagation(); navigate('/research'); }}
-                  className="text-left px-6 py-3 text-xs font-bold uppercase tracking-widest text-black hover:bg-gray-50 hover:text-[#fad02c] transition-colors"
-                >
-                  View All Research
-                </button>
-              </div>
-            </div>
-          </div>
+          <button
+            className={`flex items-center gap-1 hover:text-[#fad02c] transition-colors ${textColor} ${location.pathname === '/research' ? 'text-[#fad02c] font-bold' : ''}`}
+            onClick={() => navigate('/research')}
+          >
+            Insight
+          </button>
 
           {navItems.map(item => (
             <button
@@ -118,27 +90,12 @@ const Header: React.FC<HeaderProps> = ({ activePage, transparent = false }) => {
       {isMenuOpen && (
         <div className="absolute top-full left-0 w-full bg-white border-t border-gray-100 shadow-xl py-6 px-6 flex flex-col gap-0 lg:hidden h-[calc(100vh-80px)] overflow-y-auto">
 
-          {/* Mobile Insight Accordion */}
-          <div className="border-b border-gray-100 py-4">
-            <button
-              className="w-full flex justify-between items-center font-serif text-xl font-bold text-gray-900"
-              onClick={() => setMobileInsightOpen(!mobileInsightOpen)}
-            >
-              Insight <ChevronDown size={20} className={`transition-transform duration-300 ${mobileInsightOpen ? 'rotate-180' : ''}`} />
-            </button>
-            <div className={`overflow-hidden transition-all duration-300 ${mobileInsightOpen ? 'max-h-48 mt-4' : 'max-h-0'}`}>
-              <div className="flex flex-col gap-3 pl-4">
-                {insightCategories.map(cat => (
-                  <button key={cat} onClick={() => { navigate('/research'); setIsMenuOpen(false); }} className="text-left text-sm text-gray-600 hover:text-[#fad02c]">
-                    {cat}
-                  </button>
-                ))}
-                <button onClick={() => { navigate('/research'); setIsMenuOpen(false); }} className="text-left text-sm font-bold uppercase tracking-widest text-black mt-2">
-                  View All
-                </button>
-              </div>
-            </div>
-          </div>
+          <button
+            className="text-left font-serif text-xl font-bold text-gray-900 py-4 border-b border-gray-100"
+            onClick={() => { navigate('/research'); setIsMenuOpen(false); }}
+          >
+            Insight
+          </button>
 
           {navItems.map(item => (
             <button

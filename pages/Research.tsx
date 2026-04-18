@@ -290,16 +290,16 @@ const ResearchPage: React.FC = () => {
                 ) : (
                   articles.map((article) => (
                     <article key={article.id} onClick={() => navigate(`/article/${article.id}`)} className="group cursor-pointer grid md:grid-cols-12 gap-6 items-start">
-                      <div className="md:col-span-5 overflow-hidden aspect-[4/3] bg-gray-100 relative">
+                      <div className="md:col-span-5 overflow-hidden bg-gray-100 relative">
                         <div className="absolute top-0 left-0 bg-black text-white text-[10px] font-bold px-3 py-1 z-10 uppercase tracking-widest">{article.category}</div>
                         {article.heroImage ? (
                           <img
                             src={article.heroImage}
                             alt={article.title}
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                            className="w-full h-auto block transition-transform duration-700 group-hover:scale-105"
                           />
                         ) : (
-                          <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400 text-xs">
+                          <div className="w-full aspect-[4/3] bg-gray-200 flex items-center justify-center text-gray-400 text-xs">
                             [No Image]
                           </div>
                         )}

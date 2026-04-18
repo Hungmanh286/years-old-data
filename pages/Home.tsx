@@ -54,7 +54,18 @@ const HomePage: React.FC = () => {
   const [pbChartData, setPbChartData] = useState<any>(null);
   const [pbLoading, setPbLoading] = useState(true);
   const [pbError, setPbError] = useState<string | null>(null);
-  const [currentPbValue, setCurrentPbValue] = useState<number | null>(null);
+  const [pbTimeRange, setPbTimeRange] = useState<'3M' | '6M' | '1Y' | '3Y' | 'MAX'>('1Y');
+
+  const getPbLimit = (range: '3M' | '6M' | '1Y' | '3Y' | 'MAX') => {
+    switch (range) {
+      case '3M': return 90;
+      case '6M': return 180;
+      case '1Y': return 365;
+      case '3Y': return 1095;
+      case 'MAX': return 5000;
+      default: return 365;
+    }
+  };
 
   useEffect(() => {
     const controller = new AbortController();
@@ -150,7 +161,8 @@ const HomePage: React.FC = () => {
       setPbLoading(true);
       setPbError(null);
       try {
-        const url = `https://hungmanhdev.me/market-indicators?limit=1000&indicators=pb_vnindex,pb_nonbank`;
+        const limit = getPbLimit(pbTimeRange);
+        const url = `https://hungmanhdev.me/market-indicators?limit=${limit}&indicators=pb_vnindex,pb_nonbank`;
         const res = await fetch(url, { signal: controller.signal });
         if (!res.ok) throw new Error(`Server Error: ${res.status}`);
         const result = await res.json();
@@ -166,18 +178,16 @@ const HomePage: React.FC = () => {
         if (seriesVni && Array.isArray(seriesVni) && seriesVni.length > 0) {
           const sorted = [...seriesVni].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
           labels = sorted.map((d: any) => d.date);
-          const lastVal = sorted[sorted.length - 1].value;
-          setCurrentPbValue(lastVal);
 
           datasets.push({
             label: 'VN-Index P/B',
             data: sorted.map((d: any) => d.value),
-            borderColor: '#000000',
-            backgroundColor: 'rgba(0,0,0,0.05)',
+            borderColor: '#fad02c',
+            backgroundColor: '#fad02c',
             borderWidth: 2,
-            pointRadius: 0,
-            pointHoverRadius: 4,
-            tension: 0.3,
+            pointRadius: sorted.length > 60 ? 0 : 3,
+            pointHoverRadius: 5,
+            tension: 0.2,
             fill: false,
           });
         }
@@ -187,12 +197,12 @@ const HomePage: React.FC = () => {
           datasets.push({
             label: 'Non-Bank P/B',
             data: sorted.map((d: any) => d.value),
-            borderColor: '#fad02c',
-            backgroundColor: 'rgba(250,208,44,0.05)',
+            borderColor: '#000000',
+            backgroundColor: '#000000',
             borderWidth: 2,
-            pointRadius: 0,
-            pointHoverRadius: 4,
-            tension: 0.3,
+            pointRadius: sorted.length > 60 ? 0 : 3,
+            pointHoverRadius: 5,
+            tension: 0.2,
             fill: false,
           });
         }
@@ -209,39 +219,68 @@ const HomePage: React.FC = () => {
     };
     fetchPbData();
     return () => controller.abort();
-  }, []);
+  }, [pbTimeRange]);
 
   const pbChartOptions: ChartOptions<'line'> = useMemo(() => ({
     responsive: true,
     maintainAspectRatio: false,
+    animation: {
+      duration: 500,
+      easing: 'linear'
+    },
     interaction: { mode: 'index', intersect: false },
     plugins: {
       legend: {
         display: true,
-        position: 'top' as const,
-        labels: { boxWidth: 12, font: { size: 10, family: 'sans-serif' } }
+        position: 'bottom' as const,
+        labels: {
+          usePointStyle: true,
+          padding: 25,
+          font: { family: 'JetBrains Mono', size: 11, weight: 500 }
+        }
       },
       tooltip: {
-        backgroundColor: 'rgba(255,255,255,0.95)',
-        titleColor: '#000',
-        bodyColor: '#000',
-        borderColor: '#ddd',
+        backgroundColor: 'rgba(0,0,0,0.95)',
+        titleFont: { family: 'Playfair Display', size: 14 },
+        bodyFont: { family: 'JetBrains Mono', size: 12 },
+        titleColor: '#ffffff',
+        bodyColor: '#ffffff',
+        borderColor: 'rgba(250, 208, 44, 0.5)',
         borderWidth: 1,
-        padding: 10,
-        cornerRadius: 4,
+        padding: 12,
+        cornerRadius: 0,
+        displayColors: true,
         callbacks: {
-          label: (ctx) => ` ${ctx.dataset.label}: ${ctx.parsed.y?.toFixed(2)}`
+          label: (ctx) => {
+            let label = ctx.dataset.label || '';
+            if (label) {
+              label += ': ';
+            }
+            if (ctx.parsed.y !== null) {
+              label += ctx.parsed.y;
+            }
+            return label;
+          }
         }
       },
     },
     scales: {
       x: {
         grid: { display: false },
-        ticks: { maxTicksLimit: 6, font: { size: 9 }, color: '#9ca3af' },
+        ticks: {
+          maxTicksLimit: 8,
+          font: { family: 'Inter', size: 10 },
+          color: '#6b7280'
+        },
       },
       y: {
-        grid: { color: 'rgba(0,0,0,0.03)' },
-        ticks: { font: { size: 9, family: 'monospace' }, color: '#9ca3af' },
+        grid: { color: '#f3f4f6' },
+        beginAtZero: false,
+        ticks: {
+          font: { family: 'JetBrains Mono', size: 10 },
+          color: '#6b7280',
+          padding: 10
+        },
       },
     },
   }), []);
@@ -320,7 +359,7 @@ const HomePage: React.FC = () => {
               40 Years Old áp dụng các mô hình định lượng và phân tích vĩ mô chuyên sâu để tìm ra mối quan hệ nhân quả trong nền kinh tế.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <button onClick={() => navigate('/article')} className="bg-[#fad02c] text-black px-8 py-4 font-semibold tracking-wide hover:bg-white transition-colors">
+              <button onClick={() => navigate('/research')} className="bg-[#fad02c] text-black px-8 py-4 font-semibold tracking-wide hover:bg-white transition-colors">
                 Khám phá "Ourlook" tháng 3
               </button>
               <button onClick={() => navigate('/services')} className="border border-white text-white px-8 py-4 font-semibold tracking-wide hover:bg-white hover:text-black transition-colors">
@@ -447,7 +486,7 @@ const HomePage: React.FC = () => {
                 Theo dõi diễn biến P/B Ratio của VN-Index và nhóm Phi tài chính để xác định các vùng cơ hội dài hạn dựa trên giá trị tài sản ròng.
               </p>
               <button onClick={() => navigate('/charts')} className="flex items-center gap-3 bg-black text-white px-8 py-4 text-sm font-bold uppercase tracking-widest hover:bg-[#fad02c] hover:text-black transition-colors">
-                <Database size={18} /> View P/B History
+                <Database size={18} /> Explore Charts
               </button>
             </div>
             <div className="lg:col-span-8">
@@ -457,13 +496,16 @@ const HomePage: React.FC = () => {
                     <h3 className="font-serif text-2xl text-gray-900">P/B Ratio Valuation</h3>
                     <p className="text-xs text-gray-400 font-mono mt-1 uppercase">Metric: Trailing P/B · Market Wide</p>
                   </div>
-                  <div className="text-right">
-                    <div className="text-3xl font-light text-black">
-                      {pbLoading ? '...' : currentPbValue?.toFixed(2) || 'N/A'}
-                    </div>
-                    <div className={`text-xs font-bold px-2 py-1 mt-1 inline-block ${currentPbValue && currentPbValue < 1.4 ? 'text-green-600 bg-green-50' : 'text-gray-500 bg-gray-50'}`}>
-                      {pbLoading ? 'FETCHING' : (currentPbValue && currentPbValue < 1.4 ? 'VALUE ZONE' : 'MONITORING')}
-                    </div>
+                  <div className="flex border border-gray-200 p-1 bg-gray-50">
+                    {['3M', '6M', '1Y', '3Y', 'MAX'].map((range) => (
+                      <button
+                        key={range}
+                        onClick={() => setPbTimeRange(range as '3M' | '6M' | '1Y' | '3Y' | 'MAX')}
+                        className={`text-[10px] font-bold px-3 py-1.5 transition-all ${pbTimeRange === range ? 'bg-white text-black shadow-sm' : 'text-gray-400 hover:text-black'}`}
+                      >
+                        {range}
+                      </button>
+                    ))}
                   </div>
                 </div>
 

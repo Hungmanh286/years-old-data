@@ -124,9 +124,6 @@ const ServicesPage: React.FC = () => {
                     </li>
                   ))}
                 </ul>
-                <button className={`w-full py-4 text-xs font-bold uppercase tracking-widest transition-colors ${pkg.recommended ? 'bg-black text-white hover:bg-[#fad02c] hover:text-black' : 'bg-white border border-black text-black hover:bg-black hover:text-white'}`}>
-                  Đăng ký tư vấn
-                </button>
               </div>
             ))}
           </div>
@@ -213,7 +210,7 @@ const ServicesPage: React.FC = () => {
       <section className="py-24 bg-[#fad02c]">
         <div className="container mx-auto px-6 md:px-8 text-center">
           <h2 className="font-serif text-4xl md:text-5xl text-black mb-6">Sẵn sàng để Đầu tư Khoa học?</h2>
-          <p className="text-black/80 text-lg mb-10 max-w-2xl mx-auto font-light">Đặt lịch hẹn tư vấn 1-1 với đội ngũ chuyên gia của chúng tôi để xây dựng chiến lược phù hợp nhất với vị thế tài chính của bạn.</p>
+          <p className="text-black/80 text-lg mb-10 max-w-2xl mx-auto font-light">Chúng tôi mong muốn được đồng hành cùng bạn trên con đường đạt được mục tiêu tài chính của mình.</p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <button className="bg-black text-white px-8 py-4 font-bold text-sm uppercase tracking-widest hover:bg-white hover:text-black transition-colors flex items-center justify-center gap-2">
               <Briefcase size={18} /> Mở Hợp đồng Hợp tác
