@@ -181,9 +181,9 @@ const HomePage: React.FC = () => {
   }), []);
 
   const performanceMetrics = [
-    { label: "Lợi nhuận TB/Năm", value: "35.4%", sub: "CAGR 3 Năm", color: "text-white" },
-    { label: "Alpha (Vượt trội)", value: "+21.5%", sub: "So với VN-Index", color: "text-[#fad02c]" },
-    { label: "Rủi ro (VaR 10%)", value: "-19.1%", sub: "Đã kiểm soát", color: "text-gray-400" },
+    { label: "CARG", value: "35.4%", sub: "Lợi nhuận kép bình quân từ 2023", color: "text-white" },
+    { label: "Alpha", value: "+21.5%", sub: "Lợi nhuận vượt trội so với VN-Index", color: "text-[#fad02c]" },
+    { label: "VaR 10%", value: "-19.1%", sub: "Mức lỗ trong kịch bản xấu nhất xảy ra", color: "text-gray-400" },
   ];
 
 
