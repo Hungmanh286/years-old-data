@@ -8,6 +8,7 @@ import ArticleReaderPage from './pages/ArticleReader.tsx';
 import ChartLibraryPage from './pages/ChartLibrary.tsx';
 import ServicesPage from './pages/Services.tsx';
 import BlogEditorPage from './pages/BlogEditor.tsx';
+import AdminPage from './pages/Admin.tsx';
 
 const App: React.FC = () => {
   return (
@@ -22,6 +23,7 @@ const App: React.FC = () => {
           <Route path="/charts" element={<ChartLibraryPage />} />
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/blog" element={<BlogEditorPage />} />
+          <Route path="/admin" element={<AdminPage />} />
         </Routes>
       </div>
     </Router>
