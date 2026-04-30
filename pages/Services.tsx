@@ -65,9 +65,9 @@ const ServicesPage: React.FC = () => {
   }, [location]);
 
   const packages = [
-    { name: "Low Risk", target: "25%", var: "-20%", desc: "Chiến lược phòng thủ, phù hợp với dòng tiền nhàn rỗi dài hạn cần sự an toàn cao hơn thị trường.", features: ["Tỷ trọng cổ phiếu thấp", "Tối ưu cổ tức tiền mặt", "Phòng vệ phái sinh chủ động"] },
-    { name: "Standard", target: "30%", var: "-25%", desc: "Chiến lược cân bằng, tối ưu hóa giữa tăng trưởng tài sản và kiểm soát biến động.", recommended: true, features: ["Cân bằng Growth/Value", "Đa dạng hóa ngành", "Tối ưu hóa Alpha"] },
-    { name: "High Risk", target: "35%", var: "-30%", desc: "Chiến lược tấn công, chấp nhận biến động ngắn hạn để đạt lợi suất kép vượt trội.", features: ["Tập trung cổ phiếu tăng trưởng", "Tận dụng đòn bẩy hợp lý", "Tối đa hóa vị thế"] }
+    { name: "Low Risk", target: "25%", var: "-20%", desc: "Rủi ro được kiểm soát thấp hơn thị trường nhưng lợi nhuận mục tiêu cao hơn thị trường chung.", features: ["Tỷ trọng cổ phiếu thấp", "Phù hợp với nhà đầu tư ngại rủi ro", "Phòng vệ phái sinh chủ động"] },
+    { name: "Standard", target: "30%", var: "-25%", desc: "Rủi ro tương đương thị trường với mục tiêu lợi nhuận vượt trội so với thị trường chung.", recommended: true, features: ["Cân bằng Growth/Value", "Phù hợp với nhà đầu tư chấp nhận rủi ro vừa phải", "Tối ưu hóa Alpha"] },
+    { name: "High Risk", target: "35%", var: "-30%", desc: "Chấp nhận rủi ro cao hơn thị trường để đạt được mức tăng trưởng lợi nhuận cao nhất.", features: ["Tập trung cổ phiếu tăng trưởng", "Phù hợp với nhà đầu tư ưu tiên tăng trưởng cao", "Tối đa hóa vị thế"] }
   ];
 
   const faqs = [
@@ -121,14 +121,47 @@ const ServicesPage: React.FC = () => {
             <div className="md:w-1/2">
               <h2 className="font-serif text-4xl text-black mb-6">Hiệu quả thực tế</h2>
               <p className="text-gray-600 text-lg font-light leading-relaxed mb-8">Cỗ máy Đầu tư của chúng tôi được thiết kế để tạo ra lợi nhuận vượt trội (Alpha) từ năng lực cốt lõi, không phụ thuộc vào diễn biến tăng hay giảm của thị trường chung.</p>
-              <div className="flex gap-12">
-                <div>
-                  <div className="text-4xl font-serif text-[#fad02c] mb-1">35.4%</div>
-                  <div className="text-xs font-bold uppercase tracking-widest text-gray-500">Lợi nhuận TB/Năm</div>
+              <div className="flex flex-wrap items-center gap-6 md:gap-10 py-8">
+                {/* CARG */}
+                <div className="flex flex-col group cursor-default">
+                  <div className="text-4xl md:text-5xl font-serif text-black leading-none mb-3 transition-transform duration-300 group-hover:-translate-y-1">44.7%</div>
+                  <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#fad02c] mb-1">(CARG)</div>
+                  <div className="text-[11px] text-gray-400 leading-tight font-light max-w-[100px]">
+                    Lợi nhuận kép<br />trung bình năm
+                  </div>
                 </div>
-                <div>
-                  <div className="text-4xl font-serif text-black mb-1">+21.5%</div>
-                  <div className="text-xs font-bold uppercase tracking-widest text-gray-500">Alpha (Vượt trội)</div>
+
+                <div className="text-2xl font-light text-gray-300 pt-2 hidden md:block">=</div>
+
+                {/* ALPHA */}
+                <div className="flex flex-col group cursor-default">
+                  <div className="text-4xl md:text-5xl font-serif text-[#fad02c] leading-none mb-3 transition-transform duration-300 group-hover:-translate-y-1">30.0%</div>
+                  <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-900 mb-1">ALPHA</div>
+                  <div className="text-[11px] text-gray-500 leading-tight font-medium max-w-[120px]">
+                    Lợi nhuận vượt trội<br />so với thị trường
+                  </div>
+                </div>
+
+                <div className="text-xl font-light text-gray-300 pt-2">+</div>
+
+                {/* BETA */}
+                <div className="flex flex-col group cursor-default">
+                  <div className="text-4xl md:text-5xl font-serif text-black leading-none mb-3 transition-transform duration-300 group-hover:-translate-y-1 opacity-80 group-hover:opacity-100">9.3%</div>
+                  <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-1">BETA</div>
+                  <div className="text-[11px] text-gray-400 leading-tight font-light max-w-[120px]">
+                    Lợi nhuận từ<br />rủi ro thị trường
+                  </div>
+                </div>
+
+                <div className="text-xl font-light text-gray-300 pt-2">+</div>
+
+                {/* R(F) */}
+                <div className="flex flex-col group cursor-default">
+                  <div className="text-4xl md:text-5xl font-serif text-black leading-none mb-3 transition-transform duration-300 group-hover:-translate-y-1 opacity-80 group-hover:opacity-100">5.3%</div>
+                  <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-1">R(F)</div>
+                  <div className="text-[11px] text-gray-400 leading-tight font-light max-w-[100px]">
+                    Lãi suất<br />phi rủi ro
+                  </div>
                 </div>
               </div>
             </div>
@@ -140,8 +173,9 @@ const ServicesPage: React.FC = () => {
                 <div className="h-full bg-[#fad02c] w-[30%]"></div>
               </div>
               <div className="flex justify-between text-[10px] uppercase font-bold mt-2 text-gray-400">
-                <span>Market Return (Beta)</span>
-                <span className="text-[#fad02c]">40YO Alpha</span>
+                <span>Lãi suất phí rủi ro</span>
+                <span className="text-[#fad02c]">Beta</span>
+                <span>Alpha</span>
               </div>
             </div>
           </div>
@@ -167,14 +201,13 @@ const ServicesPage: React.FC = () => {
                     <div className="text-4xl font-serif text-black">{pkg.target}</div>
                   </div>
                   <div className="text-right">
-                    <div className="text-[10px] uppercase text-gray-400 font-bold mb-1">Max Drawdown</div>
+                    <div className="text-[10px] uppercase text-gray-400 font-bold mb-1">Var 10%</div>
                     <div className="text-xl font-serif text-gray-500">{pkg.var}</div>
                   </div>
                 </div>
                 <ul className="space-y-4 mb-8 flex-1">
                   {pkg.features.map((feat, i) => (
                     <li key={i} className="flex items-start gap-3 text-sm text-gray-600">
-                      <Check size={16} className="text-[#fad02c] shrink-0 mt-0.5" />
                       <span>{feat}</span>
                     </li>
                   ))}

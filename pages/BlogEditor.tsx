@@ -15,7 +15,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://www.hungmanhd
 interface PostCreate {
     title: string;
     content: any; // TipTap JSON content
-    category: string;
+    category?: string;
     description: string;
     date: string;
     heroImage: string;
@@ -28,7 +28,7 @@ interface PostResponse {
     id: number;
     title: string;
     content: any;
-    category: string;
+    category?: string;
     description: string;
     date: string;
     heroImage?: string;
@@ -67,10 +67,7 @@ export default function BlogEditor() {
             setError('Please enter a title');
             return;
         }
-        if (!category.trim()) {
-            setError('Please select a category');
-            return;
-        }
+
         if (!description.trim()) {
             setError('Please enter a description');
             return;
