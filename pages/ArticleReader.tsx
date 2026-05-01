@@ -19,6 +19,7 @@ interface Article {
   content: any;
   area: string;
   url: string;
+  report_url?: string;
   author?: string;
   readTime?: string;
 }
@@ -31,6 +32,7 @@ const ProgressBar: React.FC<{ progress: number }> = ({ progress }) => (
 );
 
 const ArticleSidebar: React.FC<{ article: Article }> = ({ article }) => {
+  const { report_url } = article;
   const related = [
     { title: "Lạm phát Mỹ: Đỉnh hay chưa?", date: "01 May 2025" },
     { title: "Fed và lộ trình lãi suất cuối năm 2025", date: "28 Apr 2025" },
@@ -54,14 +56,18 @@ const ArticleSidebar: React.FC<{ article: Article }> = ({ article }) => {
 
   return (
     <aside className="sticky top-32 space-y-10">
-      <div className="bg-black text-white p-6 shadow-xl">
-        <h3 className="font-serif text-xl mb-4 text-[#fad02c]">Báo cáo đầy đủ</h3>
-        <p className="text-gray-400 text-xs mb-6">Tải xuống bản phân tích chi tiết bao gồm 20+ biểu đồ độc quyền và dữ liệu thô.</p>
-        <button className="w-full flex items-center justify-center gap-3 bg-[#fad02c] text-black font-bold text-sm uppercase tracking-widest py-3 hover:bg-white transition-colors">
-          <Download size={18} /> Tải báo cáo (PDF)
-        </button>
-        <div className="mt-3 text-center text-[10px] text-gray-500">Format: PDF | Size: 4.2 MB</div>
-      </div>
+      {report_url && (
+        <div className="bg-black text-white p-6 shadow-xl">
+          <h3 className="font-serif text-xl mb-4 text-[#fad02c]">Báo cáo đầy đủ</h3>
+          <p className="text-gray-400 text-xs mb-6">Tải xuống bản phân tích chi tiết.</p>
+          <a
+            href={`${API_BASE_URL}/posts/${article.id}/report`}
+            className="w-full flex items-center justify-center gap-3 bg-[#fad02c] text-black font-bold text-sm uppercase tracking-widest py-3 hover:bg-white transition-colors"
+          >
+            <Download size={18} /> Tải báo cáo
+          </a>
+        </div>
+      )}
 
       <div>
         <h3 className="font-serif text-lg mb-4 border-b border-gray-200 pb-2">Chia sẻ</h3>

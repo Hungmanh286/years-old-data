@@ -1,6 +1,7 @@
 import './styles.scss';
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useEditor, EditorContent } from '@tiptap/react';
 import { editorExtensions } from '../components/tiptap-ui/editorExtensions';
 import { BlogMetadataForm } from '../components/blog/BlogMetadataForm';
@@ -37,6 +38,7 @@ interface PostResponse {
     status: string;
     created_at: string;
     updated_at: string;
+    report_url?: string;
 }
 
 export default function BlogEditor() {
@@ -46,10 +48,13 @@ export default function BlogEditor() {
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
     const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
     const [heroImageUrl, setHeroImageUrl] = useState('');
+    const [reportFile, setReportFile] = useState<File | null>(null);
+    const [reportUrl, setReportUrl] = useState<string | null>(null);
     const [area, setArea] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const navigate = useNavigate();
 
     const editor = useEditor({
         extensions: editorExtensions,
@@ -103,6 +108,11 @@ export default function BlogEditor() {
                 formData.append('hero_image_url', heroImageUrl.trim());
             }
 
+            // PDF report (optional)
+            if (reportFile) {
+                formData.append('report_file', reportFile);
+            }
+
             const apiUrl = `${API_BASE_URL}/posts/`;
             console.log('=== API Request Details ===');
             console.log('API URL:', apiUrl);
@@ -150,22 +160,12 @@ export default function BlogEditor() {
 
             const result: PostResponse = await response.json();
             console.log('Success response:', result);
-            setSuccessMessage(
-                status === 'draft'
-                    ? `Draft saved successfully! Post ID: ${result.id}`
-                    : `Post published successfully! Post ID: ${result.id}`
-            );
+            setReportUrl(result.report_url ?? null);
 
-            // Optional: Reset form after successful publish (not for draft)
             if (status === 'published') {
-                setTitle('');
-                setCategory('');
-                setDescription('');
-                setDate(new Date().toISOString().split('T')[0]);
-                setHeroImageFile(null);
-                setHeroImageUrl('');
-                setArea('');
-                editor.commands.setContent('<p>Hello World! Start writing your blog...</p>');
+                navigate('/admin');
+            } else {
+                setSuccessMessage(`Draft saved! Post ID: ${result.id}`);
             }
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Failed to create post';
@@ -207,11 +207,13 @@ export default function BlogEditor() {
 
     return (
         <div className="min-h-screen flex flex-col">
+
             <Header />
 
             <main className="flex-1 container mx-auto px-4 py-8">
                 <div className="max-w-4xl mx-auto">
                     <h1 className="text-3xl font-bold mb-6 text-gray-800">Write Blog</h1>
+
                     {/* Error Message */}
                     {error && (
                         <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
@@ -222,14 +224,14 @@ export default function BlogEditor() {
                         </div>
                     )}
 
-                    {/* Success Message */}
+                    {/* Draft saved banner */}
                     {successMessage && (
                         <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
-                            {successMessage}
+                            <p>{successMessage}</p>
                         </div>
                     )}
 
-                    {/* Form Fields - Extracted to Component */}
+                    {/* Form Fields */}
                     <BlogMetadataForm
                         title={title} setTitle={setTitle}
                         category={category} setCategory={setCategory}
@@ -238,6 +240,7 @@ export default function BlogEditor() {
                         date={date} setDate={setDate}
                         heroImageFile={heroImageFile} setHeroImageFile={setHeroImageFile}
                         heroImageUrl={heroImageUrl} setHeroImageUrl={setHeroImageUrl}
+                        reportFile={reportFile} setReportFile={setReportFile}
                     />
 
                     {/* Editor Section */}

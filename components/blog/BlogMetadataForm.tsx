@@ -15,6 +15,8 @@ export interface BlogMetadataFormProps {
     setHeroImageFile: (val: File | null) => void;
     heroImageUrl: string;
     setHeroImageUrl: (val: string) => void;
+    reportFile: File | null;
+    setReportFile: (val: File | null) => void;
 }
 
 export function BlogMetadataForm({
@@ -24,7 +26,8 @@ export function BlogMetadataForm({
     description, setDescription,
     date, setDate,
     heroImageFile, setHeroImageFile,
-    heroImageUrl, setHeroImageUrl
+    heroImageUrl, setHeroImageUrl,
+    reportFile, setReportFile,
 }: BlogMetadataFormProps) {
     return (
         <div className="space-y-4 mb-6">
@@ -126,6 +129,23 @@ export function BlogMetadataForm({
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-400"
                     />
                 </div>
+            </div>
+
+            {/* PDF Report Upload */}
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Báo cáo PDF{' '}
+                    <span className="text-gray-400 font-normal">(tuỳ chọn)</span>
+                </label>
+                <input
+                    type="file"
+                    accept="application/pdf"
+                    onChange={(e) => setReportFile(e.target.files?.[0] ?? null)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                />
+                {reportFile && (
+                    <p className="text-xs text-green-600 mt-1">✓ {reportFile.name}</p>
+                )}
             </div>
         </div>
     );
