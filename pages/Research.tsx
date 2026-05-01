@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Pagination } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -99,6 +100,9 @@ const ResearchPage: React.FC = () => {
   const [areas, setAreas] = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [archives, setArchives] = useState<ArchiveGroup[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const pageSize = 10;
 
   const featuredSeries = [
     {
@@ -171,6 +175,10 @@ const ResearchPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedArea, selectedCategory, selectedMonth, selectedYear]);
+
+  useEffect(() => {
     const controller = new AbortController();
 
     const fetchArticles = async () => {
@@ -198,6 +206,9 @@ const ResearchPage: React.FC = () => {
           params.set('q', searchQuery.trim());
         }
 
+        params.set('page', String(currentPage));
+        params.set('page_size', String(pageSize));
+
         const query = params.toString();
         const url = `${API_BASE_URL}/posts/${query ? `?${query}` : ''}`;
         const response = await fetch(url, { signal: controller.signal });
@@ -207,7 +218,19 @@ const ResearchPage: React.FC = () => {
         }
 
         const data = await response.json();
-        setArticles(data);
+        const list = Array.isArray(data) ? data : [];
+        setArticles(list);
+
+        const totalHeader = response.headers.get('X-Total-Count') || response.headers.get('x-total-count');
+        const parsedTotal = totalHeader ? Number(totalHeader) : NaN;
+        if (Number.isFinite(parsedTotal) && parsedTotal >= 0) {
+          setTotalItems(parsedTotal);
+        } else {
+          const inferredTotal = list.length === pageSize
+            ? currentPage * pageSize + 1
+            : (currentPage - 1) * pageSize + list.length;
+          setTotalItems(inferredTotal);
+        }
       } catch (error) {
         if (error instanceof Error && error.name !== 'AbortError') {
           console.error('Error fetching articles:', error);
@@ -220,7 +243,7 @@ const ResearchPage: React.FC = () => {
     fetchArticles();
 
     return () => controller.abort();
-  }, [searchQuery, selectedArea, selectedCategory, selectedMonth, selectedYear]);
+  }, [searchQuery, selectedArea, selectedCategory, selectedMonth, selectedYear, currentPage]);
 
   const resetFilters = () => {
     setSearchQuery('');
@@ -375,6 +398,16 @@ const ResearchPage: React.FC = () => {
                   ))
                 )}
               </div>
+              {!isLoading && (
+                <div className="mt-10 flex justify-center">
+                  <Pagination
+                    current={currentPage}
+                    onChange={(page) => setCurrentPage(page)}
+                    total={totalItems}
+                    pageSize={pageSize}
+                  />
+                </div>
+              )}
             </div>
 
             {/* UPDATED SIDEBAR */}

@@ -20,6 +20,7 @@
     "@tiptap/pm": "^3.22.3",
     "@tiptap/react": "^3.22.3",
     "@tiptap/starter-kit": "^3.22.3",
+    "antd": "^6.3.7",
     "chart.js": "4.4.1",
     "lucide-react": "^0.400.0",
     "react": "18.3.1",
