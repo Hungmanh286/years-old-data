@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { Pencil, Trash2, X, Plus } from 'lucide-react';
+import { ArrowLeft, Pencil, Trash2, X, Plus } from 'lucide-react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import { editorExtensions } from '../components/tiptap-ui/editorExtensions';
 import { BlogMetadataForm } from '../components/blog/BlogMetadataForm';
@@ -20,7 +20,141 @@ interface Article {
     area: string;
     url?: string;
     status?: string;
+    report_url?: string;
+    created_at?: string;
+    updated_at?: string;
 }
+
+const normalizeContent = (content: any) => {
+    if (!content) return '<p></p>';
+
+    if (typeof content === 'string') {
+        try {
+            return JSON.parse(content);
+        } catch (error) {
+            return content;
+        }
+    }
+
+    return content;
+};
+
+const ArticleDetailView = ({
+    post,
+    onBack,
+    onEdit,
+}: {
+    post: Article;
+    onBack: () => void;
+    onEdit: () => void;
+}) => {
+    const editor = useEditor({
+        extensions: editorExtensions,
+        content: normalizeContent(post.content),
+        editable: false,
+        editorProps: {
+            attributes: {
+                class: 'mx-auto focus:outline-none min-h-[240px] p-4',
+            },
+        },
+    });
+
+    useEffect(() => {
+        if (editor) {
+            editor.commands.setContent(normalizeContent(post.content));
+        }
+    }, [editor, post.content]);
+
+    return (
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div className="flex items-center justify-between gap-4 border-b border-gray-200 px-6 py-4">
+                <div>
+                    <p className="text-xs uppercase tracking-widest text-gray-400 mb-1">Article details</p>
+                    <h2 className="text-2xl font-bold font-serif text-gray-800">{post.title}</h2>
+                </div>
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={onBack}
+                        className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+                    >
+                        <ArrowLeft size={16} /> Back
+                    </button>
+                    <button
+                        onClick={onEdit}
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-[#fad02c] text-black font-bold rounded-lg hover:bg-[#e5bc25] transition-colors"
+                    >
+                        <Pencil size={16} /> Edit
+                    </button>
+                </div>
+            </div>
+
+            <div className="grid lg:grid-cols-12 gap-8 p-6">
+                <div className="lg:col-span-8 space-y-6">
+                    <div className="grid sm:grid-cols-2 gap-4 text-sm">
+                        <div className="rounded-lg bg-gray-50 p-4">
+                            <div className="text-xs uppercase tracking-widest text-gray-400 mb-1">Category</div>
+                            <div className="font-medium text-gray-900">{post.category || 'N/A'}</div>
+                        </div>
+                        <div className="rounded-lg bg-gray-50 p-4">
+                            <div className="text-xs uppercase tracking-widest text-gray-400 mb-1">Area</div>
+                            <div className="font-medium text-gray-900">{post.area || 'N/A'}</div>
+                        </div>
+                        <div className="rounded-lg bg-gray-50 p-4">
+                            <div className="text-xs uppercase tracking-widest text-gray-400 mb-1">Date</div>
+                            <div className="font-medium text-gray-900">{post.date || 'N/A'}</div>
+                        </div>
+                        <div className="rounded-lg bg-gray-50 p-4">
+                            <div className="text-xs uppercase tracking-widest text-gray-400 mb-1">Status</div>
+                            <div className="font-medium text-gray-900">{post.status || 'N/A'}</div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 className="text-sm font-semibold text-gray-700 mb-2">Description</h3>
+                        <p className="text-gray-600 leading-7 bg-gray-50 rounded-lg p-4">{post.description || 'No description available.'}</p>
+                    </div>
+
+                    <div>
+                        <h3 className="text-sm font-semibold text-gray-700 mb-3">Content</h3>
+                        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                            <EditorContent editor={editor} className="min-h-[240px] p-6" />
+                        </div>
+                    </div>
+                </div>
+
+                <aside className="lg:col-span-4 space-y-6">
+                    <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 space-y-3">
+                        <h3 className="text-sm font-semibold text-gray-700">Post info</h3>
+                        <dl className="space-y-3 text-sm">
+                            <div>
+                                <dt className="text-gray-400 uppercase tracking-widest text-[10px]">ID</dt>
+                                <dd className="font-medium text-gray-900">#{post.id}</dd>
+                            </div>
+                            <div>
+                                <dt className="text-gray-400 uppercase tracking-widest text-[10px]">URL</dt>
+                                <dd className="font-medium text-gray-900 break-all">{post.url || 'N/A'}</dd>
+                            </div>
+                            <div>
+                                <dt className="text-gray-400 uppercase tracking-widest text-[10px]">Created</dt>
+                                <dd className="font-medium text-gray-900">{post.created_at || 'N/A'}</dd>
+                            </div>
+                            <div>
+                                <dt className="text-gray-400 uppercase tracking-widest text-[10px]">Updated</dt>
+                                <dd className="font-medium text-gray-900">{post.updated_at || 'N/A'}</dd>
+                            </div>
+                        </dl>
+                    </div>
+
+                    {post.heroImage && (
+                        <div className="rounded-lg border border-gray-200 overflow-hidden">
+                            <img src={post.heroImage} alt={post.title} className="w-full h-56 object-cover" />
+                        </div>
+                    )}
+                </aside>
+            </div>
+        </div>
+    );
+};
 
 const EditPostForm = ({ post, onBack, onUpdate }: { post: Article, onBack: () => void, onUpdate: () => void }) => {
     const [title, setTitle] = useState(post.title || '');
@@ -29,6 +163,7 @@ const EditPostForm = ({ post, onBack, onUpdate }: { post: Article, onBack: () =>
     const [date, setDate] = useState(post.date || new Date().toISOString().split('T')[0]);
     const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
     const [heroImageUrl, setHeroImageUrl] = useState('');
+    const [reportFile, setReportFile] = useState<File | null>(null);
     const [area, setArea] = useState(post.area || '');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -83,6 +218,10 @@ const EditPostForm = ({ post, onBack, onUpdate }: { post: Article, onBack: () =>
                 formData.append('hero_image', heroImageFile);
             } else if (heroImageUrl.trim()) {
                 formData.append('hero_image_url', heroImageUrl.trim());
+            }
+
+            if (reportFile) {
+                formData.append('report_file', reportFile);
             }
 
             // Check if formData is empty
@@ -166,6 +305,7 @@ const EditPostForm = ({ post, onBack, onUpdate }: { post: Article, onBack: () =>
                 date={date} setDate={setDate}
                 heroImageFile={heroImageFile} setHeroImageFile={setHeroImageFile}
                 heroImageUrl={heroImageUrl} setHeroImageUrl={setHeroImageUrl}
+                reportFile={reportFile} setReportFile={setReportFile}
             />
 
             <div className="mt-6">
@@ -198,6 +338,9 @@ const EditPostForm = ({ post, onBack, onUpdate }: { post: Article, onBack: () =>
 export default function AdminPage() {
     const [articles, setArticles] = useState<Article[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isDetailLoading, setIsDetailLoading] = useState(false);
+    const [detailError, setDetailError] = useState<string | null>(null);
+    const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
     const [editingPost, setEditingPost] = useState<Article | null>(null);
     const [isDeleting, setIsDeleting] = useState<number | null>(null);
 
@@ -219,6 +362,28 @@ export default function AdminPage() {
     useEffect(() => {
         fetchArticles();
     }, []);
+
+    const handleSelectArticle = async (article: Article) => {
+        setIsDetailLoading(true);
+        setDetailError(null);
+        setEditingPost(null);
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/posts/${article.id}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch article details');
+            }
+
+            const data = await response.json();
+            setSelectedArticle(data);
+        } catch (error) {
+            console.error('Error fetching article detail:', error);
+            setDetailError('Không thể tải chi tiết bài viết này.');
+            setSelectedArticle(article);
+        } finally {
+            setIsDetailLoading(false);
+        }
+    };
 
     const handleDelete = async (id: number) => {
         if (!window.confirm('Are you sure you want to delete this post?')) return;
@@ -249,7 +414,7 @@ export default function AdminPage() {
                             <h1 className="text-3xl font-serif font-bold text-gray-900">Admin Dashboard</h1>
                             <p className="text-gray-500 text-sm mt-2">Manage your blog posts</p>
                         </div>
-                        {!editingPost && (
+                        {!editingPost && !selectedArticle && (
                             <a
                                 href="/blog"
                                 className="flex items-center gap-2 bg-black text-white px-5 py-2.5 rounded-lg text-sm font-bold tracking-wide hover:bg-gray-800 transition-colors"
@@ -265,9 +430,29 @@ export default function AdminPage() {
                             onBack={() => setEditingPost(null)}
                             onUpdate={() => {
                                 setEditingPost(null);
+                                setSelectedArticle(null);
                                 fetchArticles();
                             }}
                         />
+                    ) : selectedArticle ? (
+                        <div className="space-y-4">
+                            {detailError && (
+                                <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                                    {detailError}
+                                </div>
+                            )}
+                            {isDetailLoading ? (
+                                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center text-gray-500">
+                                    Loading article details...
+                                </div>
+                            ) : (
+                                <ArticleDetailView
+                                    post={selectedArticle}
+                                    onBack={() => setSelectedArticle(null)}
+                                    onEdit={() => setEditingPost(selectedArticle)}
+                                />
+                            )}
+                        </div>
                     ) : (
                         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                             <div className="overflow-x-auto">
@@ -296,7 +481,11 @@ export default function AdminPage() {
                                             </tr>
                                         ) : (
                                             articles.map(article => (
-                                                <tr key={article.id} className="hover:bg-gray-50 transition-colors">
+                                                <tr
+                                                    key={article.id}
+                                                    className="hover:bg-gray-50 transition-colors cursor-pointer"
+                                                    onClick={() => handleSelectArticle(article)}
+                                                >
                                                     <td className="px-6 py-4 font-medium text-gray-900">#{article.id}</td>
                                                     <td className="px-6 py-4">
                                                         <div className="font-semibold text-gray-900 mb-1">{article.title}</div>
@@ -311,17 +500,22 @@ export default function AdminPage() {
                                                     <td className="px-6 py-4 text-right">
                                                         <div className="flex items-center justify-end gap-3">
                                                             <button
-                                                                onClick={() => setEditingPost(article)}
+                                                                onClick={(event) => {
+                                                                    event.stopPropagation();
+                                                                    setEditingPost(article);
+                                                                }}
                                                                 className="text-blue-600 hover:text-blue-800 transition-colors p-1"
                                                                 title="Edit Post"
                                                             >
                                                                 <Pencil size={18} />
                                                             </button>
                                                             <button
-                                                                onClick={() => handleDelete(article.id)}
+                                                                onClick={(event) => {
+                                                                    event.stopPropagation();
+                                                                    handleDelete(article.id);
+                                                                }}
                                                                 disabled={isDeleting === article.id}
                                                                 className="text-red-500 hover:text-red-700 transition-colors p-1 disabled:opacity-50"
-                                                                title="Delete Post"
                                                             >
                                                                 <Trash2 size={18} />
                                                             </button>
