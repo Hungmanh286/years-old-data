@@ -228,7 +228,7 @@ const ArticleReaderPage: React.FC = () => {
       <div className="h-28"></div>
 
       <section className="pb-12 border-b border-gray-100">
-        <div className="container mx-auto px-6 md:px-8 max-w-6xl">
+        <div className="container mx-auto px-6 md:px-8">
           <nav className="flex items-center gap-2 text-xs uppercase tracking-widest text-gray-500 mb-8">
             <button onClick={() => navigate('/')} className="hover:text-black cursor-pointer transition-colors">Trang chủ</button>
             <ChevronRight size={12} />
@@ -258,7 +258,7 @@ const ArticleReaderPage: React.FC = () => {
       </section>
 
       <section className="py-12">
-        <div className="container mx-auto px-6 md:px-8 max-w-6xl">
+        <div className="container mx-auto px-6 md:px-8">
           <div className="grid lg:grid-cols-12 gap-12">
             <main className="lg:col-span-8">
               {article.heroImage && (
