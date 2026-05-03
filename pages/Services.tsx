@@ -65,9 +65,9 @@ const ServicesPage: React.FC = () => {
   }, [location]);
 
   const packages = [
-    { name: "Low Risk", target: "25%", var: "-20%", desc: "Rủi ro được kiểm soát thấp hơn thị trường nhưng lợi nhuận mục tiêu cao hơn thị trường chung.", features: ["Tỷ trọng cổ phiếu thấp", "Phù hợp với nhà đầu tư ngại rủi ro", "Phòng vệ phái sinh chủ động"] },
-    { name: "Standard", target: "30%", var: "-25%", desc: "Rủi ro tương đương thị trường với mục tiêu lợi nhuận vượt trội so với thị trường chung.", recommended: true, features: ["Cân bằng Growth/Value", "Phù hợp với nhà đầu tư chấp nhận rủi ro vừa phải", "Tối ưu hóa Alpha"] },
-    { name: "High Risk", target: "35%", var: "-30%", desc: "Chấp nhận rủi ro cao hơn thị trường để đạt được mức tăng trưởng lợi nhuận cao nhất.", features: ["Tập trung cổ phiếu tăng trưởng", "Phù hợp với nhà đầu tư ưu tiên tăng trưởng cao", "Tối đa hóa vị thế"] }
+    { name: "Low Risk", target: "25%", var: "-20%", desc: "Rủi ro được kiểm soát thấp hơn thị trường nhưng lợi nhuận mục tiêu cao hơn thị trường chung.", features: ["Phù hợp với nhà đầu tư ngại rủi ro"] },
+    { name: "Standard", target: "30%", var: "-25%", desc: "Rủi ro tương đương thị trường với mục tiêu lợi nhuận vượt trội so với thị trường chung.", recommended: true, features: ["Phù hợp với nhà đầu tư chấp nhận rủi ro vừa phải"] },
+    { name: "High Risk", target: "35%", var: "-30%", desc: "Chấp nhận rủi ro cao hơn thị trường để đạt được mức tăng trưởng lợi nhuận cao nhất.", features: ["Phù hợp với nhà đầu tư ưu tiên tăng trưởng cao"] }
   ];
 
   const faqs = [
@@ -167,15 +167,17 @@ const ServicesPage: React.FC = () => {
             </div>
             <div className="md:w-1/2 bg-white p-8 shadow-lg border border-gray-200">
               <h3 className="font-serif text-xl mb-4">Chiến lược Alpha là gì?</h3>
-              <p className="text-sm text-gray-500 mb-4 leading-relaxed">"Alpha là phần lợi nhuận vượt trội mà chúng tôi tạo ra sau khi loại bỏ các biến động của thị trường chung (Beta). Điều này chứng minh rằng lợi nhuận đến từ năng lực chọn lọc cổ phiếu và quản trị rủi ro thay vì diễn biến của thị trường.</p>
+              <p className="text-sm text-gray-500 mb-4 leading-relaxed">Alpha là phần lợi nhuận vượt trội mà chúng tôi tạo ra sau khi loại bỏ các biến động của thị trường chung (Beta). Điều này chứng minh rằng lợi nhuận đến từ năng lực chọn lọc cổ phiếu và quản trị rủi ro thay vì diễn biến của thị trường.</p>
+              <p className="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-4">Tính từ năm 2023</p>
               <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden flex">
-                <div className="h-full bg-gray-400 w-[40%]"></div>
-                <div className="h-full bg-[#fad02c] w-[30%]"></div>
+                <div className="h-full bg-[#fad02c] w-[67%]"></div>
+                <div className="h-full bg-gray-300 w-[21%]"></div>
+                <div className="h-full bg-gray-500 w-[12%]"></div>
               </div>
-              <div className="flex justify-between text-[10px] uppercase font-bold mt-2 text-gray-400">
-                <span>Lãi suất phí rủi ro</span>
-                <span className="text-[#fad02c]">Beta</span>
-                <span>Alpha</span>
+              <div className="flex text-[10px] uppercase font-bold mt-2 text-gray-400">
+                <span className="text-[#fad02c] w-[67%] text-center">Alpha</span>
+                <span className="text-gray-300 w-[21%] text-center">Beta</span>
+                <span className="w-[12%] text-center">R(F)</span>
               </div>
             </div>
           </div>
@@ -187,7 +189,7 @@ const ServicesPage: React.FC = () => {
           <div className="text-center mb-16">
             <span className="text-[#fad02c] font-bold tracking-[0.2em] uppercase text-xs mb-3 block">Service Offerings</span>
             <h2 className="font-serif text-4xl text-black">Gói Quản lý Tài sản</h2>
-            <p className="text-gray-500 mt-4 max-w-2xl mx-auto">Lựa chọn chiến lược phù hợp với khẩu vị rủi ro của bạn. Tất cả đều được quản lý trên tài khoản chính chủ tại DNSE.</p>
+            <p className="text-gray-500 mt-4 max-w-2xl mx-auto">Lựa chọn chiến lược phù hợp với khẩu vị rủi ro. Tất cả đều được quản lý trên tài khoản chứng khoán chính chủ của bạn.</p>
           </div>
           <div className="grid lg:grid-cols-3 gap-8">
             {packages.map((pkg, idx) => (
@@ -229,7 +231,7 @@ const ServicesPage: React.FC = () => {
                   <div className="text-[#fad02c] font-serif text-5xl leading-none">1%</div>
                   <div>
                     <h4 className="font-bold text-lg mb-2">Phí Quản lý (Năm)</h4>
-                    <p className="text-sm text-gray-500 leading-relaxed">Phí được thu định kỳ trên tổng giá trị tài sản ròng (NAV), dùng để chi trả cho hoạt động vận hành, hệ thống dữ liệu và đội ngũ nghiên cứu."</p>
+                    <p className="text-sm text-gray-500 leading-relaxed">Phí được thu định kỳ trên tổng giá trị tài sản ròng (NAV), dùng để chi trả cho hoạt động vận hành, hệ thống dữ liệu và đội ngũ nghiên cứu.</p>
                   </div>
                 </div>
                 <div className="w-full h-px bg-gray-800"></div>
@@ -237,7 +239,7 @@ const ServicesPage: React.FC = () => {
                   <div className="text-[#fad02c] font-serif text-5xl leading-none">20%</div>
                   <div>
                     <h4 className="font-bold text-lg mb-2">Phí Hiệu quả</h4>
-                    <p className="text-sm text-gray-500 leading-relaxed">Phí chỉ được áp dụng trên phần lợi nhuận tạo ra (High-water mark). Nếu danh mục không có lãi, phí này không phát sinh."</p>
+                    <p className="text-sm text-gray-500 leading-relaxed">Phí chỉ được áp dụng trên phần lợi nhuận tạo ra (High-water mark). Nếu danh mục không có lãi, phí này không phát sinh.</p>
                   </div>
                 </div>
               </div>
@@ -312,7 +314,6 @@ const ServicesPage: React.FC = () => {
                   value={formData.fullName}
                   onChange={handleFormChange}
                   required
-                  placeholder="Nguyễn Văn A"
                   className="w-full bg-[#111] border border-gray-800 text-white px-4 py-3 text-sm focus:outline-none focus:border-[#fad02c] transition-colors"
                 />
               </div>
@@ -324,7 +325,6 @@ const ServicesPage: React.FC = () => {
                   value={formData.phone}
                   onChange={handleFormChange}
                   required
-                  placeholder="09xx xxx xxx"
                   className="w-full bg-[#111] border border-gray-800 text-white px-4 py-3 text-sm focus:outline-none focus:border-[#fad02c] transition-colors"
                 />
               </div>
@@ -336,7 +336,6 @@ const ServicesPage: React.FC = () => {
                   value={formData.email}
                   onChange={handleFormChange}
                   required
-                  placeholder="example@gmail.com"
                   className="w-full bg-[#111] border border-gray-800 text-white px-4 py-3 text-sm focus:outline-none focus:border-[#fad02c] transition-colors"
                 />
               </div>

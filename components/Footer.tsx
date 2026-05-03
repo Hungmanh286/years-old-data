@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin, Facebook } from 'lucide-react';
 
 const Footer = () => (
@@ -18,10 +19,9 @@ const Footer = () => (
         <div className="md:col-span-1 md:pl-10">
           <h4 className="text-[#fad02c] font-bold uppercase tracking-widest text-xs mb-6">Khám phá</h4>
           <ul className="space-y-4 text-sm text-gray-400 font-light">
-            <li><a href="#" className="hover:text-white transition-colors">Nghiên cứu</a></li>
-            <li><a href="#" className="hover:text-white transition-colors">Thư viện biểu đồ</a></li>
-            <li><a href="#" className="hover:text-white transition-colors">Dịch vụ</a></li>
-            <li><a href="#" className="hover:text-white transition-colors">Báo cáo Mẫu</a></li>
+            <li><Link to="/research" className="hover:text-white transition-colors">Nghiên cứu</Link></li>
+            <li><Link to="/charts" className="hover:text-white transition-colors">Thư viện biểu đồ</Link></li>
+            <li><Link to="/services" className="hover:text-white transition-colors">Dịch vụ</Link></li>
           </ul>
         </div>
 

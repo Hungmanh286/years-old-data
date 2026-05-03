@@ -52,9 +52,6 @@ const SHEET_COLUMN_MAPPING = {
   'PB': {
     'columns': { 'P/B Vnindex': 'pb_vnindex', 'P/B Non-bank': 'pb_nonbank', 'P/B Bank': 'pb_bank' }
   },
-  'Ret': {
-    'columns': { '40 Years Old': 'ret_40years_old_pct', 'VNI Adjusted': 'ret_vni_adjusted_pct' }
-  },
   'Tur': {
     'columns': { 'Turnover Ratio': 'turnover_ratio' }
   },
@@ -89,7 +86,6 @@ const DISPLAY_NAMES: Record<string, string> = {
   'Eps': 'Market EPS',
   '%St': 'Market Structure (PE/PB)',
   'PB': 'P/B Ratio Valuation',
-  'Ret': 'Return Performance',
   'Tur': 'Turnover Ratio',
   'Der': 'Derivatives Ratio',
   'Ins': 'Insider Transactions',
@@ -101,22 +97,26 @@ const DISPLAY_NAMES: Record<string, string> = {
 };
 
 const CATEGORY_GROUPS = [
+  { title: "Liquidity & Flow", icon: <TrendingUp size={16} />, keys: ['Tur', 'Der', 'Avg', 'Mat', 'Ins', 'Cor', 'Vol', 'Bre'] },
   { title: "Valuation", icon: <DollarSign size={16} />, keys: ['PB', 'Eps', 'Div', '%St', 'Map'] },
-  { title: "Market Health", icon: <Activity size={16} />, keys: ['Vol', 'Bre', 'Tra', 'Hea'] },
-  { title: "Liquidity & Flow", icon: <TrendingUp size={16} />, keys: ['Tur', 'Der', 'Avg', 'Mat', 'Ins'] },
-  { title: "Performance", icon: <BarChart2 size={16} />, keys: ['Ret', 'Cor'] },
+  { title: "Leading Economic", icon: <Activity size={16} />, keys: ['Tra'] },
 ];
 
 const ChartLibraryPage: React.FC = () => {
   const navigate = useNavigate();
   const [activeKey, setActiveKey] = useState<string>('PB');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [expandedMenus, setExpandedMenus] = useState<string[]>(['Valuation', 'Market Health']);
+  const [expandedMenus, setExpandedMenus] = useState<string[]>(['Liquidity & Flow', 'Valuation']);
   const [timeRange, setTimeRange] = useState<'3M' | '6M' | '1Y' | '3Y' | 'MAX'>('1Y');
 
   const [chartData, setChartData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const getActiveMenuTitle = () => {
+    const group = CATEGORY_GROUPS.find((item) => item.keys.includes(activeKey));
+    return group?.title || 'Terminal Explorer';
+  };
 
   const toggleMenu = (menu: string) => {
     setExpandedMenus(prev =>
@@ -350,7 +350,7 @@ const ChartLibraryPage: React.FC = () => {
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <span className="w-2 h-2 bg-[#fad02c]"></span>
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Macro Quantitative Research</span>
+                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{getActiveMenuTitle()}</span>
                 </div>
                 <h1 className="font-serif text-3xl md:text-4xl text-gray-900 leading-tight">{DISPLAY_NAMES[activeKey]}</h1>
               </div>
@@ -404,7 +404,7 @@ const ChartLibraryPage: React.FC = () => {
             <div className="md:col-span-3 bg-white border border-gray-200 p-8 shadow-sm">
               <div className="flex items-center gap-3 mb-4">
                 <Info className="text-[#fad02c]" size={20} />
-                <h3 className="font-serif text-xl font-bold">Research Methodology</h3>
+                <h3 className="font-serif text-xl font-bold">Methodology</h3>
               </div>
               <div className="text-gray-600 text-sm leading-relaxed space-y-4 font-light">
                 <p>

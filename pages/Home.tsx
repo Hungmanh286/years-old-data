@@ -49,6 +49,7 @@ const HomePage: React.FC = () => {
   const [perfChartData, setPerfChartData] = useState<any>(null);
   const [perfLoading, setPerfLoading] = useState(true);
   const [perfError, setPerfError] = useState<string | null>(null);
+  const [perfTimeRange, setPerfTimeRange] = useState<'YTD' | '3M' | '6M' | '1Y' | '3Y' | 'MAX'>('1Y');
 
   // --- P/B Ratio Valuation Chart State ---
   const [pbChartData, setPbChartData] = useState<any>(null);
@@ -57,6 +58,24 @@ const HomePage: React.FC = () => {
   const [pbTimeRange, setPbTimeRange] = useState<'3M' | '6M' | '1Y' | '3Y' | 'MAX'>('1Y');
 
   const getPbLimit = (range: '3M' | '6M' | '1Y' | '3Y' | 'MAX') => {
+    switch (range) {
+      case '3M': return 90;
+      case '6M': return 180;
+      case '1Y': return 365;
+      case '3Y': return 1095;
+      case 'MAX': return 5000;
+      default: return 365;
+    }
+  };
+
+  const getPerfLimit = (range: 'YTD' | '3M' | '6M' | '1Y' | '3Y' | 'MAX') => {
+    if (range === 'YTD') {
+      const now = new Date();
+      const startOfYear = new Date(now.getFullYear(), 0, 1);
+      const diffDays = Math.ceil((now.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24));
+      return Math.max(diffDays, 1);
+    }
+
     switch (range) {
       case '3M': return 90;
       case '6M': return 180;
@@ -96,7 +115,8 @@ const HomePage: React.FC = () => {
       setPerfLoading(true);
       setPerfError(null);
       try {
-        const url = `https://hungmanhdev.me/market-indicators?limit=1095&indicators=ret_40years_old_pct,ret_vni_adjusted_pct`;
+        const limit = getPerfLimit(perfTimeRange);
+        const url = `https://hungmanhdev.me/market-indicators?limit=${limit}&indicators=ret_40years_old_pct,ret_vni_adjusted_pct`;
         const res = await fetch(url, { signal: controller.signal });
         if (!res.ok) throw new Error(`Server Error: ${res.status}`);
         const result = await res.json();
@@ -113,7 +133,7 @@ const HomePage: React.FC = () => {
           const sorted = [...series40].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
           labels = sorted.map((d: any) => d.date);
           datasets.push({
-            label: '40YO Strategy',
+            label: '40 Years Old',
             data: sorted.map((d: any) => d.value),
             borderColor: '#fad02c',
             backgroundColor: 'rgba(250,208,44,0.08)',
@@ -152,7 +172,7 @@ const HomePage: React.FC = () => {
     };
     fetchPerf();
     return () => controller.abort();
-  }, []);
+  }, [perfTimeRange]);
 
   // Fetch P/B Ratio data (Indicators: pb_vnindex, pb_nonbank)
   useEffect(() => {
@@ -293,17 +313,20 @@ const HomePage: React.FC = () => {
     plugins: {
       legend: { display: false },
       tooltip: {
-        backgroundColor: 'rgba(0,0,0,0.92)',
-        titleFont: { family: 'serif', size: 12 },
-        bodyFont: { family: 'monospace', size: 11 },
-        padding: 10,
+        backgroundColor: 'rgba(0,0,0,0.95)',
+        titleFont: { family: 'Playfair Display', size: 14 },
+        bodyFont: { family: 'JetBrains Mono', size: 12 },
+        padding: 12,
         cornerRadius: 0,
-        borderColor: 'rgba(250,208,44,0.4)',
+        borderColor: 'rgba(250, 208, 44, 0.5)',
         borderWidth: 1,
+        displayColors: true,
         callbacks: {
           label: (ctx) => {
+            const label = ctx.dataset.label || '';
             const val = ctx.parsed.y;
-            return ` ${ctx.dataset.label}: ${val !== null ? val.toFixed(2) + '%' : 'N/A'}`;
+            const valueText = val !== null ? (val * 100).toFixed(2) : 'N/A';
+            return `${label}: ${valueText}`;
           },
         },
       },
@@ -322,16 +345,19 @@ const HomePage: React.FC = () => {
         ticks: {
           font: { size: 9, family: 'monospace' },
           color: '#6b7280',
-          callback: (v) => `${v}%`,
+          callback: (value) => {
+            if (typeof value !== 'number') return value;
+            return (value * 100).toFixed(2);
+          },
         },
       },
     },
   }), []);
 
   const performanceMetrics = [
-    { label: "CARG", value: "35.4%", sub: "Lợi nhuân kép bình quân từ 2023", color: "text-white" },
-    { label: "Alpha", value: "+21.5%", sub: "Lợi nhuận vượt trội so với VN-Index", color: "text-[#fad02c]" },
-    { label: "VaR 10%", value: "-19.1%", sub: "Mức lỗ trong kịch bản xấu nhât xảy ra", color: "text-gray-400" },
+    { label: "CARG", value: "44.7%", sub: "Lợi nhuân kép bình quân từ 2023", color: "text-white" },
+    { label: "Alpha", value: "+30.0%", sub: "Lợi nhuận vượt trội so với VN-Index", color: "text-[#fad02c]" },
+    { label: "VaR 10%", value: "-20%", sub: "Mức lỗ trong kịch bản xấu nhât xảy ra", color: "text-gray-400" },
   ];
 
 
@@ -360,7 +386,7 @@ const HomePage: React.FC = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <button onClick={() => navigate('/research')} className="bg-[#fad02c] text-black px-8 py-4 font-semibold tracking-wide hover:bg-white transition-colors">
-                Khám phá "Ourlook" tháng 3
+                “Nghiên cứu mới”
               </button>
               <button onClick={() => navigate('/services')} className="border border-white text-white px-8 py-4 font-semibold tracking-wide hover:bg-white hover:text-black transition-colors">
                 Triết lý đầu tư
@@ -389,22 +415,32 @@ const HomePage: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-[#1a1a1a] p-6 border border-gray-800 relative shadow-2xl">
+            <div className="bg-[#111] p-6 relative shadow-2xl">
               {/* Chart Header */}
               <div className="flex justify-between items-center mb-5 border-b border-gray-800 pb-4">
                 <div>
-                  <h3 className="uppercase tracking-widest text-xs font-semibold text-gray-400">Return Performance</h3>
-                  <p className="text-[10px] text-gray-600 font-mono mt-0.5">3Y Cumulative · EOD Data</p>
+                  <h3 className="uppercase tracking-widest text-xs font-semibold text-gray-400">Hiệu suất đầu tư</h3>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-1.5">
                     <span className="w-8 h-[2px] bg-[#fad02c] inline-block"></span>
-                    <span className="text-[10px] text-gray-400 font-mono">40YO</span>
+                    <span className="text-[10px] text-gray-400 font-mono">40 Years Old</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <span className="w-8 h-[2px] bg-gray-600 inline-block"></span>
-                    <span className="text-[10px] text-gray-400 font-mono">VNI</span>
+                    <span className="text-[10px] text-gray-400 font-mono">VNI Adjusted</span>
                   </div>
+                </div>
+                <div className="flex border border-gray-700 p-1 bg-[#111]">
+                  {['YTD', '3M', '6M', '1Y', '3Y', 'MAX'].map((range) => (
+                    <button
+                      key={range}
+                      onClick={() => setPerfTimeRange(range as 'YTD' | '3M' | '6M' | '1Y' | '3Y' | 'MAX')}
+                      className={`text-[10px] font-bold px-3 py-1.5 transition-all ${perfTimeRange === range ? 'bg-white text-black shadow-sm' : 'text-gray-400 hover:text-white'}`}
+                    >
+                      {range}
+                    </button>
+                  ))}
                 </div>
               </div>
 
@@ -428,6 +464,11 @@ const HomePage: React.FC = () => {
                 {!perfLoading && !perfError && perfChartData && (
                   <Line options={perfChartOptions} data={perfChartData} />
                 )}
+              </div>
+
+              <div className="mt-6 pt-6 border-t border-gray-800 flex justify-between items-center text-[10px] text-gray-400 font-mono uppercase tracking-wider">
+                <span>“VNI Adjusted là hiệu suất của Vnindex đã bao gồm cổ tức”</span>
+                <span>Updated: {new Date().toLocaleDateString('vi-VN')}</span>
               </div>
             </div>
           </div>

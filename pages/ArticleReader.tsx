@@ -33,11 +33,38 @@ const ProgressBar: React.FC<{ progress: number }> = ({ progress }) => (
 
 const ArticleSidebar: React.FC<{ article: Article }> = ({ article }) => {
   const { report_url } = article;
-  const related = [
-    { title: "Lạm phát Mỹ: Đỉnh hay chưa?", date: "01 May 2025" },
-    { title: "Fed và lộ trình lãi suất cuối năm 2025", date: "28 Apr 2025" },
-    { title: "Dòng vốn ETF đảo chiều", date: "20 Apr 2025" }
-  ];
+  const [related, setRelated] = useState<Article[]>([]);
+
+  useEffect(() => {
+    if (!article.category) return;
+
+    const controller = new AbortController();
+
+    const fetchRelated = async () => {
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/posts?category=${encodeURIComponent(article.category)}`,
+          { signal: controller.signal }
+        );
+
+        if (!response.ok) {
+          throw new Error('Không thể tải danh sách bài viết liên quan.');
+        }
+
+        const data = await response.json();
+        const items = Array.isArray(data) ? data : data.items || [];
+        setRelated(items.filter((item: Article) => item.id !== article.id));
+      } catch (err: any) {
+        if (err?.name !== 'AbortError') {
+          console.error('Error fetching related articles:', err);
+        }
+      }
+    };
+
+    fetchRelated();
+
+    return () => controller.abort();
+  }, [article.category, article.id]);
 
   const shareToFacebook = () => {
     const url = window.location.href;
@@ -95,14 +122,18 @@ const ArticleSidebar: React.FC<{ article: Article }> = ({ article }) => {
 
       <div>
         <h3 className="font-serif text-lg mb-6 border-b border-gray-200 pb-2">Bài viết liên quan</h3>
-        <div className="space-y-6">
-          {related.map((item, idx) => (
-            <div key={idx} className="group cursor-pointer">
-              <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">{item.date}</div>
-              <h4 className="font-serif text-lg leading-snug group-hover:text-[#fad02c] transition-colors">{item.title}</h4>
-            </div>
-          ))}
-        </div>
+        {related.length > 0 ? (
+          <div className="space-y-6">
+            {related.map((item) => (
+              <div key={item.id} className="group cursor-pointer">
+                <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">{item.date}</div>
+                <h4 className="font-serif text-lg leading-snug group-hover:text-[#fad02c] transition-colors">{item.title}</h4>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-gray-400">Chưa có bài viết liên quan.</p>
+        )}
       </div>
     </aside>
   );
