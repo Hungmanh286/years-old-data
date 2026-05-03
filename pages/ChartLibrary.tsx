@@ -398,6 +398,11 @@ const ChartLibraryPage: React.FC = () => {
                 <Line options={chartOptions} data={chartData} />
               )}
             </div>
+
+            <div className="px-6 md:px-8 py-4 border-t border-gray-100 flex justify-between items-center text-[10px] text-gray-400 font-mono uppercase tracking-wider">
+              <span>Source: Bloomberg, HOSE, 40YO Analysis</span>
+              <span>Updated: {new Date().toLocaleDateString('vi-VN')}</span>
+            </div>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
