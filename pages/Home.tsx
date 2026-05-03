@@ -386,7 +386,7 @@ const HomePage: React.FC = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <button onClick={() => navigate('/research')} className="bg-[#fad02c] text-black px-8 py-4 font-semibold tracking-wide hover:bg-white transition-colors">
-                “Nghiên cứu mới”
+                Nghiên cứu mới
               </button>
               <button onClick={() => navigate('/services')} className="border border-white text-white px-8 py-4 font-semibold tracking-wide hover:bg-white hover:text-black transition-colors">
                 Triết lý đầu tư
@@ -522,7 +522,7 @@ const HomePage: React.FC = () => {
           <div className="grid lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-4">
               <span className="text-[#fad02c] font-bold tracking-widest uppercase text-xs mb-3 block">Data Library</span>
-              <h2 className="font-serif text-4xl text-black mb-6">Định giá thị trường.</h2>
+              <h2 className="font-serif text-4xl text-black mb-6">Định giá thị trường</h2>
               <p className="text-gray-600 mb-8 font-light text-lg leading-relaxed">
                 Theo dõi diễn biến P/B Ratio của VN-Index và nhóm Phi tài chính để xác định các vùng cơ hội dài hạn dựa trên giá trị tài sản ròng.
               </p>

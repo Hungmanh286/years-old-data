@@ -295,13 +295,6 @@ const ChartLibraryPage: React.FC = () => {
               <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 px-3">Index Selection</span>
             </div>
 
-            <div className="p-4">
-              <div className="relative">
-                <input type="text" placeholder="Search indicator..." className="w-full bg-gray-50 border border-gray-200 pl-9 pr-3 py-2 text-xs font-medium focus:outline-none focus:border-black transition-colors rounded-none" />
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
-              </div>
-            </div>
-
             <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
               {CATEGORY_GROUPS.map((group, idx) => (
                 <div key={idx} className="mb-2">
